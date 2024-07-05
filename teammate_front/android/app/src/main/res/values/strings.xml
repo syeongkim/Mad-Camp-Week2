@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">플메가되</string>
+    <string name="kakao_app_key">eea955f0accdbe436c8c40170d8c7369</string> <!-- 여기에 카카오 네이티브 앱 키를 넣습니다 -->
+    <string name="kakao_redirect_scheme">kakaoeea955f0accdbe436c8c40170d8c7369</string> <!-- 여기에 kakao + 네이티브 앱 키를 넣습니다 -->
+    <string name="kakao_redirect_host">oauth</string>
+</resources>

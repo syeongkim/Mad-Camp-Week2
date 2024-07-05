@@ -1,4 +1,4 @@
-package com.example.teammate_front
+package com.example.teammate
 
 import io.flutter.embedding.android.FlutterActivity
 
