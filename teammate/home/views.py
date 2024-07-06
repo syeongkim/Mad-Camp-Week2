@@ -30,6 +30,7 @@ def kakao_callback(request):
     )
     
     token_json = token_response.json()
+    print(token_json)
     access_token = token_json.get('access_token')
     if access_token:
         user_info_url = "https://kapi.kakao.com/v2/user/me"
@@ -40,9 +41,10 @@ def kakao_callback(request):
             }
         )
         user_info_json = user_info_response.json()
+        print(user_info_json)
         id = user_info_json.get('id')
         nickname = user_info_json.get('properties').get('nickname')
-        created_at = user_info_json.get('kakao_account').get('created_at')
+        created_at = user_info_json.get('connected_at')
         
         user, created = MyUser.objects.get_or_create(
             kakao_id=id, 
@@ -57,7 +59,8 @@ def kakao_callback(request):
         user_info = {
             'id': id,
             'nickname': nickname,
-            'createdAt': created_at
+            'createdAt': created_at,
+            'is_exist': not created
         }
         return JsonResponse(user_info)
     else:
