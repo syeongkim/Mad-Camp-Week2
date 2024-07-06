@@ -5,19 +5,26 @@
     
     <application
         android:label="teammate_front"
-        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        
-        <!-- 카카오 SDK 초기화를 위한 메타 데이터 추가 -->
-        <meta-data
-            android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key" />
 
+        <activity 
+            android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
+            android:exported="true">
+            <intent-filter android:label="flutter_web_auth">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식의 앱 실행 스킴 설정 -->
+                <!-- 카카오 로그인 Redirect URI -->
+                <data android:scheme="kakaoba7fb2ea07fc05c0d9bef2699731d508" android:host="oauth"/>
+            </intent-filter>
+        </activity>
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
