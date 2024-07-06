@@ -24,6 +24,7 @@ class LoginScreen extends StatelessWidget {
 
       // 로그인 성공 처리
       onLogin();
+    
     } catch (e) {
   print('카카오 로그인 실패: $e');
   if (e is KakaoAuthException) {

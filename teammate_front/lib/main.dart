@@ -6,7 +6,7 @@ import 'tabs/profile.dart';
 import 'services/login.dart';
 
 void main() {
-  KakaoSdk.init(nativeAppKey: 'eea955f0accdbe436c8c40170d8c7369'); // 여기에 카카오 네이티브 앱 키를 입력하세요.
+  KakaoSdk.init(nativeAppKey: 'ba7fb2ea07fc05c0d9bef2699731d508'); // 여기에 카카오 네이티브 앱 키를 입력하세요.
   runApp(MyApp());
 }
 
