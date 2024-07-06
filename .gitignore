@@ -1,1 +1,5 @@
+# 가상환경
 venv/
+
+# sqlite3
+db.sqlite3

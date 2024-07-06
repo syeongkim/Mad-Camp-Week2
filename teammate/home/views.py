@@ -49,7 +49,10 @@ def kakao_callback(request):
             defaults={'nickname': nickname, 'created_at': created_at}
         )
         
-        print(user, created)
+        if created:
+            print("새로운 사용자입니다.")
+        else:
+            print("이미 존재하는 사용자입니다.")
         
         user_info = {
             'id': id,
