@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from home.views import kakao_login, kakao_callback
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('oauth', kakao_login, name='kakao_login'),
+    path('oauth/callback', kakao_callback, name='kakao_callback')
 ]

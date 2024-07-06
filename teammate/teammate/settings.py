@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home'
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+KAKAO_REST_API_KEY = 'fc4e17c0c5767418fa3e29c02271c49a'
+KAKAO_REDIRECT_URI = 'http://localhost:8000/oauth/callback'
+
+AUTH_USER_MODEL = 'home.MyUser'
