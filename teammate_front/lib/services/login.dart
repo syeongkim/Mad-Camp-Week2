@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -19,45 +20,30 @@ class LoginScreen extends StatelessWidget {
     try {
       // 카카오 계정으로 로그인 시도
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      print('카카오 계정으로 로그인 성공: ${token.accessToken}');
       // 로그인 성공 시, 토큰을 사용하여 서버에 요청
-      final Uri uri = Uri.parse('http://localhost:8000/oauth/callback').replace(
+      final Uri uri = Uri.parse('http://10.0.2.2:8000/oauth/callback').replace(
         queryParameters: {
           'access_token': token.accessToken,
         },
       );
+      print('서버 요청: $uri');
       http.Response response = await http.get(uri);
-      print('서버 응답: ${response.body}');
-      onLogin();
+      Map<String, dynamic> response_dict = jsonDecode(response.body);
+      print('서버 응답: $response_dict');
+      if (response_dict['is_exist'] == true) {
+        print("User is already created");
+        onLogin();
+      } else {
+        print("User is not created");
+        onLogin();
+      }
     } catch (e) {
       // 로그인 실패 시, 스낵바를 통해 사용자에게 알림
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('카카오 로그인 실패: $e'),
       ));
     }
-
-    // try {
-    //   // 카카오 계정으로 바로 로그인 시도
-    //   print('여기까지옴');
-
-    //   OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-    //   print('여기도옴');
-    //   print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-
-    //   // 로그인 성공 처리
-    //   onLogin();
-    // } catch (e) {
-    //   print('카카오 로그인 실패: $e');
-    //   if (e is KakaoAuthException) {
-    //     print('KakaoAuthException: ${e.message}');
-    //   } else if (e is KakaoClientException) {
-    //     print('KakaoClientException: ${e.message}');
-    //   } else {
-    //     print('Unknown error: $e');
-    //   }
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //     content: Text('카카오 로그인 실패: $e'),
-    //   ));
-    // }
   }
 
   @override

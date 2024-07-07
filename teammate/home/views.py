@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 import requests
 from django.conf import settings
@@ -66,4 +67,5 @@ def kakao_callback(request):
         'createdAt': created_at,
         'is_exist': not created
     }
+
     return JsonResponse(user_info)
