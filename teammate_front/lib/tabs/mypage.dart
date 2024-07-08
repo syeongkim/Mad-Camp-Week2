@@ -34,37 +34,32 @@ class _MyPageState extends State<MyPage> {
       if (userId != null) {
         final Uri uri =
             Uri.parse('http://10.0.2.2:8000/user/update/$userId').replace();
-        print('여기서 에러?1');
         http.Response response = await http.get(uri);
-        print('여기서 에러?2');
-        print(response.body);
         setState(() {
           // 사용자 정보를 가져와서 상태 변경
           userInfo = json.decode(response.body) as Map<String, dynamic>;
         });
-        print(userInfo);
-        print('여기서 에러?3');
       }
     } catch (e) {
       // 요청 실패 시 사용자에게 알림
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('사용자 정보 가져오기 실패: $e'),
       ));
-      print(e);
     }
   }
 
-  void _userEdit() {
+  Future<void> _userEdit() async {
     // 편집 버튼 클릭 시 수행할 동작 추가
-    print('Edit button clicked');
-    Navigator.push(
+    final updated = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => MyEdit(userInfo: userInfo),
       ),
     );
 
-    _fetchUserInfo(); // 사용자가 정보를 업데이트한 경우 다시 정보를 가져옴
+    if (updated == true) {
+      _fetchUserInfo(); // 사용자가 정보를 업데이트한 경우 다시 정보를 가져옴
+    }
   }
 
   @override

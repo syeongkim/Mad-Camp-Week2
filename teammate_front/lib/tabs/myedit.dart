@@ -54,7 +54,7 @@ class _MyEditPageState extends State<MyEdit> {
         );
 
         if (response.statusCode == 200) {
-          Navigator.pop(context, true);
+          Navigator.pop(context, true); // Update successful, return true
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Failed to update user info: ${response.statusCode}'),
