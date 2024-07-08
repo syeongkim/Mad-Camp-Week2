@@ -4,7 +4,7 @@ from django.shortcuts import render
 import requests
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseRedirect
-from .models import MyUser, Users
+from .models import MyUser, Users, Reviews
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 
@@ -34,4 +34,34 @@ def kakao_callback(request):
     }
     return JsonResponse(user_info)
 
-
+def upload_review(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+        
+    reviewer_id = body.get('reviewer_id')
+    reviewee_id = body.get('reviewee_id')
+    score = body.get('score')
+    comment = body.get('comment')
+    
+    created = Reviews.objects.create(
+        reviewer_id=reviewer_id,
+        reviewee_id=reviewee_id,
+        score=score,
+        comment=comment,
+    )
+    
+    if created:
+        return JsonResponse({'message': 'new review is successfully uploaded'})
+    else:
+        return JsonResponse({'message': 'failed to upload new review'})
+    
+def select_reviews(request, reviewee_id):
+    if request.method == 'GET':
+        review_exists = Reviews.objects.filter(reviewee_id=reviewee_id)
+        if review_exists:
+            reviews = Reviews.objects.filter(reviewee_id=reviewee_id).values()
+            return JsonResponse(list(reviews))
+        else:
+            return JsonResponse({'message': 'No review found'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
