@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import upload_post, return_post
+from .views import *
 
 urlpatterns = [
-    path('upload', upload_post, name='upload_post'),
-    path('return', return_post, name='return_post')
+    path('teamposts', teamposts, name='post'),
+    path('courses/<str:course_id>', teamposts_course, name='return_course_post'),
+    path('post/<int:post_id>', teamposts_post, name='return_post_detail'),
+    path('request/<int:request_id>', teamrequests, name='request_detail'),
 ]

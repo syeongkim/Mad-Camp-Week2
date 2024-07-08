@@ -4,6 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'tabs/board.dart';
 import 'tabs/chat.dart';
 import 'tabs/mypage.dart';
+import 'tabs/newpost.dart';
 import 'services/login.dart';
 
 void main() {
@@ -86,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _tabs = [
     Board(),
-    TeamChat(),
+    CourseFormPage(),
     MyPage(),
   ];
 
