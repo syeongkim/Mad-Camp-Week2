@@ -39,13 +39,8 @@ def teamposts(request):
         return JsonResponse({'message': 'Invalid request method'}, safe=False)
     
     
-def teamposts_course(request):
+def teamposts_course(request, course_id):
     if request.method == 'GET':
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        
-        course_id = body.get('course_id')
-        
         post_exists = TeamPost.objects.filter(course_id=course_id)
         
         if post_exists:
@@ -58,13 +53,8 @@ def teamposts_course(request):
         
     
 
-def teamposts_post(request):
+def teamposts_post(request, post_id):
     if request.method == 'GET':
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        
-        post_id = body.get('post_id')
-        
         try:
             post = TeamPost.objects.get(post_id=post_id)
             return JsonResponse(model_to_dict(post))
@@ -100,9 +90,8 @@ def teamposts_post(request):
     else:
         return JsonResponse({'message': 'Invalid request method'})
     
-def teamrequests(request):
+def teamrequests(request, request_id):
     if (request.method == 'GET'):
-        request_id = request.GET.get('request_id')
         try:
             request = TeamRequest.objects.get(request_id=request_id)
             return JsonResponse(model_to_dict(request))
