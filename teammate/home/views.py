@@ -6,6 +6,8 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import MyUser, Users
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+
 
 def kakao_callback(request):
     access_token = request.GET.get('access_token')
@@ -32,24 +34,4 @@ def kakao_callback(request):
     }
     return JsonResponse(user_info)
 
-@csrf_exempt
-def register(request):
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-        
-    user_id = body.get('user_id')
-    name = body.get('user_name')
-    nickname = body.get('user_nickname')
-    student_id = body.get('user_student_id')
-    
-    created = Users.objects.create(
-        user_id=user_id,
-        name=name,
-        nickname=nickname,
-        student_id=student_id,
-    )
-    
-    if created:
-        return JsonResponse({'message': 'new user is successfully created'})
-    else:
-        return JsonResponse({'message': 'failed to create new user'})
+
