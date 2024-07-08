@@ -50,7 +50,7 @@ class _CourseFormPageState extends State<CourseFormPage> {
         };
 
         final postteampostUri =
-            Uri.parse('http://10.0.2.2:8000/teamposts/upload');
+            Uri.parse('http://10.0.2.2:8000/teamposts/teamposts');
         http.Response postResponse = await http.post(
           postteampostUri,
           headers: {
