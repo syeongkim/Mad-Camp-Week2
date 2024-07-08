@@ -15,12 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from home.views import kakao_callback
-from home.views import register
+from django.urls import include, path
+from home.views import kakao_callback, register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('oauth/callback', kakao_callback, name='kakao_callback'),
-    path('user/register', register, name='register')
+    path('user/register', register, name='register'),
+    path('teamposts/', include('teamposts.urls'))
 ]

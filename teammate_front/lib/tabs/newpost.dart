@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class CourseFormPage extends StatefulWidget {
   @override
@@ -32,6 +33,8 @@ class _CourseFormPageState extends State<CourseFormPage> {
         _selectedTime!.minute,
       );
 
+      String formattedDate = finalDateTime.toUtc().toIso8601String();
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _userId = prefs.getInt('userId');
 
@@ -43,10 +46,11 @@ class _CourseFormPageState extends State<CourseFormPage> {
           'post_title': _title,
           'post_content': _comment,
           'member_limit': _capacity,
-          'due_date': finalDateTime.toIso8601String()
+          'due_date': formattedDate
         };
 
-        final postteampostUri = Uri.parse('http://10.0.2.2:8000/teamposts');
+        final postteampostUri =
+            Uri.parse('http://10.0.2.2:8000/teamposts/upload');
         http.Response postResponse = await http.post(
           postteampostUri,
           headers: {
@@ -59,7 +63,7 @@ class _CourseFormPageState extends State<CourseFormPage> {
         if (postResponse.statusCode == 200) {
           print('POST 요청 성공: ${postResponse.body}');
         } else {
-          print('POST 요청 실패: ${postResponse.statusCode}');
+          print('POST 요청 실패: ${postResponse.statusCode}, ${postResponse.body}');
         }
       } catch (e) {
         print(e);
