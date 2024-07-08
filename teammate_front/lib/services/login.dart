@@ -6,7 +6,6 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'login_info.dart';
 import 'package:http/http.dart' as http;
 
-
 class LoginScreen extends StatelessWidget {
   final VoidCallback onLogin;
 
@@ -20,21 +19,21 @@ class LoginScreen extends StatelessWidget {
       return;
     }
 
-      //여기에서 isUser에 유저인지 여부를 받아올 예정
-      // bool isUser = false;
+    //여기에서 isUser에 유저인지 여부를 받아올 예정
+    // bool isUser = false;
 
-      // //새로운 유저의 회원가입
-      // if (isUser == false) {
-      //   Navigator.of(context).push(
-      //     MaterialPageRoute(
-      //       builder: (context) => LoginInfo(),
-      //     ),
-      //   );
-      // }
+    // //새로운 유저의 회원가입
+    // if (isUser == false) {
+    //   Navigator.of(context).push(
+    //     MaterialPageRoute(
+    //       builder: (context) => LoginInfo(),
+    //     ),
+    //   );
+    // }
 
-      // 로그인 성공 처리
-      // onLogin();
-    
+    // 로그인 성공 처리
+    // onLogin();
+
     try {
       // 카카오 계정으로 로그인 시도
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
@@ -47,14 +46,14 @@ class LoginScreen extends StatelessWidget {
       );
       print('서버 요청: $uri');
       http.Response response = await http.get(uri);
-      Map<String, dynamic> response_dict = jsonDecode(response.body);
+      var responseDict = json.decode(response.body) as Map<String, dynamic>;
 
       //유저 id를 로컬에 저장
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', response_dict['id']);
+      await prefs.setInt('userId', responseDict['id']);
 
-      print('서버 응답: $response_dict');
-      if (response_dict['is_exist'] == true) {
+      print('서버 응답: $responseDict');
+      if (responseDict['is_exist'] == true) {
         print("User is already created");
         onLogin();
       } else {
