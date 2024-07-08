@@ -3,3 +3,6 @@ venv/
 
 # sqlite3
 db.sqlite3
+
+#django의 pyc 파일들
+.pyc
