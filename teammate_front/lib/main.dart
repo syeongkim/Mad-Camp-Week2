@@ -29,6 +29,7 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  //flutter 안에서 해결하는 방법 찾기
   bool isLoggedIn = false;
 
   void _login() {
