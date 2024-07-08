@@ -30,6 +30,44 @@ class LoginScreen extends StatelessWidget {
       print('서버 요청: $uri');
       http.Response response = await http.get(uri);
       Map<String, dynamic> response_dict = jsonDecode(response.body);
+
+      // //회원가입 프론트 - 서버 통신 임시 코드 시작 (추후 registter.dart로 이동)
+      // try {
+      //   var userId = response_dict['id'];
+      //   var userName = "윤우성";
+      //   var userNickname = "몰입캠프힘드러";
+      //   var userStudentId = "202311123";
+
+      //   var postData = {
+      //     'user_id': userId,
+      //     'user_name': userName,
+      //     'user_nickname': userNickname,
+      //     'user_student_id': userStudentId,
+      //   };
+
+      //   final postregisterUri = Uri.parse('http://10.0.2.2:8000/user/register/');
+      //   http.Response postResponse = await http.post(
+      //     postregisterUri,
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: jsonEncode(postData),
+      //   );
+
+      //   // POST 요청 결과 확인
+      //   if (postResponse.statusCode == 200) {
+      //     print('POST 요청 성공: ${postResponse.body}');
+      //   } else {
+      //     print('POST 요청 실패: ${postResponse.statusCode}');
+      //   }
+      // } catch (e) {
+      //   // 로그인 실패 시, 스낵바를 통해 사용자에게 알림
+      //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //     content: Text('카카오 로그인 실패: $e'),
+      //   ));
+
+      // //회원가입 프론트 - 서버 통신 임시 코드 끝 (추후 registter.dart로 이동)
+
       print('서버 응답: $response_dict');
       if (response_dict['is_exist'] == true) {
         print("User is already created");
