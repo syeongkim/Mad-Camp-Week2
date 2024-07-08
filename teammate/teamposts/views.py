@@ -42,10 +42,10 @@ def teamposts(request):
 def teamposts_course(request, course_id):
     if request.method == 'GET':
         post_exists = TeamPost.objects.filter(course_id=course_id)
-        
+        print(post_exists)
         if post_exists:
-            posts = TeamPost.objects.all().values().order_by('-created_at').values() # 최신순으로 정렬
-            return JsonResponse(list(posts))
+            posts = TeamPost.objects.filter(course_id=course_id).values().order_by('-created_at').values() # 최신순으로 정렬
+            return JsonResponse(list(posts), safe=False)
         else:
             return JsonResponse({'message': 'No post found'})
     else:
