@@ -1,9 +1,13 @@
-import 'dart:convert';
+\import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class LoginInfo extends StatefulWidget {
+  // final VoidCallback onLogin;
+
+  // LoginInfo({required this.onLogin});
+
   @override
   _LoginInfoState createState() => _LoginInfoState();
 }
@@ -50,6 +54,7 @@ class _LoginInfoState extends State<LoginInfo> {
         // POST 요청 결과 확인
         if (postResponse.statusCode == 200) {
           print('POST 요청 성공: ${postResponse.body}');
+          // widget.onLogin();
         } else {
           print('POST 요청 실패: ${postResponse.statusCode}');
         }

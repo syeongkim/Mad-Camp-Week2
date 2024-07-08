@@ -58,11 +58,18 @@ class LoginScreen extends StatelessWidget {
         onLogin();
       } else {
         print("User is not created");
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => LoginInfo(),
+        bool infoDone = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => LoginInfo(),
           ),
         );
+        print("hi");
+        if (infoDone == true) {
+          onLogin();
+        }
+        else {
+          _loginWithKakao(context);
+        }
       }
     } catch (e) {
       // 로그인 실패 시, 스낵바를 통해 사용자에게 알림
