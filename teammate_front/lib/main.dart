@@ -1,95 +1,128 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'login_info.dart';
-import 'package:http/http.dart' as http;
+import 'tabs/board.dart';
+import 'tabs/chat.dart';
+import 'tabs/mypage.dart';
+import 'services/login.dart';
 
-class LoginScreen extends StatelessWidget {
-  final VoidCallback onLogin;
+void main() {
+  KakaoSdk.init(
+      nativeAppKey:
+          'ba7fb2ea07fc05c0d9bef2699731d508'); // 여기에 카카오 네이티브 앱 키를 입력하세요.
+  runApp(MyApp());
+}
 
-  LoginScreen({required this.onLogin});
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Tab Navigation',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: AuthWrapper(),
+    );
+  }
+}
 
-  Future<void> _loginWithKakao(BuildContext context) async {
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Kakao login is not supported on this platform.'),
-      ));
-      return;
-    }
+class AuthWrapper extends StatefulWidget {
+  @override
+  _AuthWrapperState createState() => _AuthWrapperState();
+}
 
-    //여기에서 isUser에 유저인지 여부를 받아올 예정
-    // bool isUser = false;
+class _AuthWrapperState extends State<AuthWrapper> {
+  Future<bool?> getLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedin');
+  }
 
-    // //새로운 유저의 회원가입
-    // if (isUser == false) {
-    //   Navigator.of(context).push(
-    //     MaterialPageRoute(
-    //       builder: (context) => LoginInfo(),
-    //     ),
-    //   );
-    // }
+  Future<void> saveLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedin', true);
+  }
 
-    // 로그인 성공 처리
-    // onLogin();
-
-    try {
-      // 카카오 계정으로 로그인 시도
-      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-      print('카카오 계정으로 로그인 성공: ${token.accessToken}');
-      // 로그인 성공 시, 토큰을 사용하여 서버에 요청
-      final Uri uri = Uri.parse('http://10.0.2.2:8000/oauth/callback').replace(
-        queryParameters: {
-          'access_token': token.accessToken,
-        },
-      );
-      print('서버 요청: $uri');
-      http.Response response = await http.get(uri);
-      var responseDict = json.decode(response.body) as Map<String, dynamic>;
-
-      //유저 id를 로컬에 저장
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('userId', responseDict['id']);
-
-      print('서버 응답: $responseDict');
-      if (responseDict['is_exist'] == true) {
-        print("User is already created");
-        onLogin();
-      } else {
-        print("User is not created");
-        bool infoDone = await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => LoginInfo(),
-          ),
-        );
-        print("hi");
-        if (infoDone == true) {
-          onLogin();
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool?>(
+      future: getLogin(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // 로딩 중인 상태를 나타내는 로딩 인디케이터 표시
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          // 오류 발생 시 오류 메시지 표시
+          return Scaffold(
+            body: Center(
+              child: Text('오류 발생: ${snapshot.error}'),
+            ),
+          );
+        } else if (snapshot.hasData && snapshot.data == true) {
+          // 로그인된 상태
+          return MyHomePage();
+        } else {
+          // 로그인되지 않은 상태
+          return LoginScreen(onLogin: () async {
+            await saveLogin();
+            setState(() {}); // 상태 변경을 트리거하여 UI를 업데이트
+          });
         }
-        else {
-          _loginWithKakao(context);
-        }
-      }
-    } catch (e) {
-      // 로그인 실패 시, 스낵바를 통해 사용자에게 알림
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('카카오 로그인 실패: $e'),
-      ));
-    }
+      },
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _currentIndex = 0;
+
+  final List<Widget> _tabs = [
+    Board(),
+    TeamChat(),
+    MyPage(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
+      // appBar: AppBar(
+      //   title: Text('Tab Navigation Example'),
+      // ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _tabs,
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => _loginWithKakao(context),
-          child: Text('Login with Kakao'),
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '보드',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: '팀챗',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: '내프로필',
+          ),
+        ],
       ),
     );
   }
