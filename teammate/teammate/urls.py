@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from home.views import kakao_callback, register
+from home.views import kakao_callback
+# from home.views import register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('oauth/callback', kakao_callback, name='kakao_callback'),
-    path('user/register', register, name='register'),
+    # path('user/register', register, name='register'),
+    path('user/', include('user.urls')),
     path('teamposts/', include('teamposts.urls'))
 ]

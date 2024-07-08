@@ -23,30 +23,18 @@ class MyUser(AbstractBaseUser):
     def __str__(self):
         return str(self.kakao_id)
     
-class Courses(models.Model):
-    course_id = models.CharField(max_length=10, primary_key=True, unique=True)
-    course_name = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return str(self.course_id)
-    
-class Skills(models.Model):
-    skill_id = models.AutoField(primary_key=True, unique=True)
-    skill_name = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return str(self.skill_id)
+
     
 class Users(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
-    name = models.CharField(max_length=20)
-    nickname = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=20, default='unknown')
+    nickname = models.CharField(max_length=20, unique=True, default='unknown')
     student_id = models.IntegerField(default=None, unique=True)
-    course_taken_id = models.ForeignKey(Courses, on_delete=models.RESTRICT, related_name='courses_taken', null=True, blank=True)
-    skill_id = models.IntegerField(Skills, null=True, blank=True)
-    user_comment = models.TextField(null=True, blank=True)
+    user_comment = models.TextField(null=True, blank=True, default="comment")
+    user_capacity = models.TextField(null=True, blank=True, default="comment")
     created_at = models.DateTimeField(auto_now_add=True)
     
+
     def __str__(self):
         return str(self.user_id)
     

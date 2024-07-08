@@ -14,9 +14,8 @@ class _MyPageState extends State<MyPage> {
     'name': "",
     'nickname': "",
     'student_id': 0,
-    'courses_taken_id': [],
-    'skill_id': [],
     'user_comment': "",
+    'user_capacity': "",
     'created_at': ""
   };
 
@@ -32,21 +31,25 @@ class _MyPageState extends State<MyPage> {
       int? userId = prefs.getInt('userId');
 
       if (userId != null) {
-        final Uri uri = Uri.parse('http://10.0.2.2:8000/user/return').replace(
-          queryParameters: {
-            'user_id': userId.toString(),
-          },
-        );
+        final Uri uri =
+            Uri.parse('http://10.0.2.2:8000/user/update/$userId').replace();
+        print('여기서 에러?1');
         http.Response response = await http.get(uri);
+        print('여기서 에러?2');
+        print(response.body);
         setState(() {
+          // 사용자 정보를 가져와서 상태 변경
           userInfo = json.decode(response.body) as Map<String, dynamic>;
         });
+        print(userInfo);
+        print('여기서 에러?3');
       }
     } catch (e) {
       // 요청 실패 시 사용자에게 알림
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('사용자 정보 가져오기 실패: $e'),
       ));
+      print(e);
     }
   }
 
@@ -71,13 +74,14 @@ class _MyPageState extends State<MyPage> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            _buildInfo('Name', userInfo['name']),
+            _buildInfo('Name', userInfo["name"]),
             _buildInfo('Nickname', userInfo['nickname']),
             _buildInfo('Comment', userInfo['user_comment']),
             _buildInfo('Student ID', userInfo['student_id'].toString()),
-            _buildInfo('Courses Taken',
-                (userInfo['courses_taken_id'] as List).join(', ')),
-            _buildInfo('Skills', (userInfo['skill_id'] as List).join(', ')),
+            _buildInfo('Capacity', userInfo['user_capacity']),
+            // _buildInfo('Courses Taken',
+            //     (userInfo['courses_taken_id'] as List).join(', ')),
+            // _buildInfo('Skills', (userInfo['skill'] as List).join(', ')),
             _buildInfo('Created At', userInfo['created_at']),
           ],
         ),
