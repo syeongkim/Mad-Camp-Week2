@@ -55,9 +55,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _tabs = [
-    Tab1(),
-    Tab2(),
-    Tab3(),
+    Board(),
+    TeamChat(),
+    MyProfile(),
   ];
 
   void _onTabTapped(int index) {
@@ -79,15 +79,15 @@ class _MyHomePageState extends State<MyHomePage> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Tab 1',
+            label: '보드',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: 'Tab 2',
+            label: '팀챗',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Tab 3',
+            label: '내프로필',
           ),
         ],
       ),

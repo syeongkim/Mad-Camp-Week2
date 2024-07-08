@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'login_info.dart';
 
 class LoginScreen extends StatelessWidget {
   final VoidCallback onLogin;
@@ -21,6 +22,18 @@ class LoginScreen extends StatelessWidget {
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
       print('여기도옴');
       print('카카오 계정으로 로그인 성공: ${token.accessToken}');
+
+      //여기에서 isUser에 유저인지 여부를 받아올 예정
+      bool isUser = false;
+
+      //새로운 유저의 회원가입
+      if (isUser == false) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => LoginInfo(),
+          ),
+        );
+      }
 
       // 로그인 성공 처리
       onLogin();
