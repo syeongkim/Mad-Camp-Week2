@@ -1,30 +1,30 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
-class CourseFormPage extends StatefulWidget {
+class NewPostPage extends StatefulWidget {
+  final String courseId;
+
+  NewPostPage({required this.courseId});
+
   @override
-  _CourseFormPageState createState() => _CourseFormPageState();
+  _NewPostPageState createState() => _NewPostPageState();
 }
 
-class _CourseFormPageState extends State<CourseFormPage> {
+class _NewPostPageState extends State<NewPostPage> {
   final _formKey = GlobalKey<FormState>();
-  int? _userId = 0;
-  String? _selectedCourse;
   String? _title;
   String? _comment;
   int? _capacity;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
 
-  final List<String> _courses = ['Course 1', 'Course 2', 'Course 3'];
-
   Future<void> _postSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      //print('Nickname: $_nickname, Name: $_name, StudentID: $_studentID, Email: $_email');
+
       DateTime finalDateTime = DateTime(
         _selectedDate!.year,
         _selectedDate!.month,
@@ -33,47 +33,43 @@ class _CourseFormPageState extends State<CourseFormPage> {
         _selectedTime!.minute,
       );
 
-      String formattedDate = finalDateTime.toUtc().toIso8601String();
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      _userId = prefs.getInt('userId');
+      int? userId = prefs.getInt('userId');
 
-      //회원가입 정보를 DB에 저장
+      var postData = {
+        'leader_id': userId,
+        'course_id': widget.courseId, // 실제 course_id를 전달
+        'post_title': _title,
+        'post_content': _comment,
+        'member_limit': _capacity,
+        'due_date': finalDateTime.toUtc().toIso8601String(),
+      };
+
       try {
-        var postData = {
-          'leader_id': _userId,
-          'course_id': _selectedCourse,
-          'post_title': _title,
-          'post_content': _comment,
-          'member_limit': _capacity,
-          'due_date': formattedDate
-        };
-
-        final postteampostUri =
-            Uri.parse('http://10.0.2.2:8000/teamposts/teamposts');
-        http.Response postResponse = await http.post(
-          postteampostUri,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        final response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/teamposts/teamposts'),
+          headers: {'Content-Type': 'application/json'},
           body: jsonEncode(postData),
         );
 
-        // POST 요청 결과 확인
-        if (postResponse.statusCode == 200) {
-          print('POST 요청 성공: ${postResponse.body}');
+        if (response.statusCode == 200) {
+          Navigator.pop(context, {
+            'title': _title,
+            'comment': _comment,
+            'capacity': _capacity,
+            'dueDate': finalDateTime,
+          });
+          print("data saved successfully");
         } else {
-          print('POST 요청 실패: ${postResponse.statusCode}, ${postResponse.body}');
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to save post: ${response.statusCode}'),
+          ));
         }
       } catch (e) {
-        print(e);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('포스트 실패: $e'),
+          content: Text('Error: $e'),
         ));
       }
-
-      Navigator.pop(context, true);
-      //요기 바꿔야함
     }
   }
 
@@ -81,7 +77,7 @@ class _CourseFormPageState extends State<CourseFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('팀플 등록'),
+        title: Text('New Post'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -89,27 +85,6 @@ class _CourseFormPageState extends State<CourseFormPage> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: '과목 선택'),
-                value: _selectedCourse,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedCourse = newValue;
-                  });
-                },
-                items: _courses.map((course) {
-                  return DropdownMenuItem(
-                    child: Text(course),
-                    value: course,
-                  );
-                }).toList(),
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a course';
-                  }
-                  return null;
-                },
-              ),
               TextFormField(
                 decoration: InputDecoration(labelText: '팀플 제목'),
                 onSaved: (newValue) {
@@ -153,8 +128,7 @@ class _CourseFormPageState extends State<CourseFormPage> {
                 title: Text(
                   _selectedDate == null
                       ? 'Select Date'
-                      : 'Selected Date: ${_selectedDate!.toLocal()}'
-                          .split(' ')[0],
+                      : 'Selected Date: ${_selectedDate!.toLocal()}'.split(' ')[0],
                 ),
                 trailing: Icon(Icons.calendar_today),
                 onTap: _pickDate,
@@ -203,11 +177,4 @@ class _CourseFormPageState extends State<CourseFormPage> {
         _selectedTime = pickedTime;
       });
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    title: 'Course Form',
-    home: CourseFormPage(),
-  ));
 }
