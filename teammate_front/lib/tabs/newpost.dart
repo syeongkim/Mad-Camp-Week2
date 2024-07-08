@@ -46,7 +46,8 @@ class _CourseFormPageState extends State<CourseFormPage> {
           'due_date': finalDateTime.toIso8601String()
         };
 
-        final postteampostUri = Uri.parse('http://10.0.2.2:8000/teamposts');
+        final postteampostUri =
+            Uri.parse('http://10.0.2.2:8000/teamposts/upload');
         http.Response postResponse = await http.post(
           postteampostUri,
           headers: {
