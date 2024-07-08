@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-$&s$=9!q(%me1*u0p7()mhs@9+!mf&*qkwj5gyk00pcwg9p(wa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.2.2',
+                 '127.0.0.1']
 
 
 # Application definition
@@ -76,8 +77,12 @@ WSGI_APPLICATION = 'teammate.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'teammate',
+        'USER' : 'root',
+        'PASSWORD' : '1234',
+        'HOST' : 'localhost',
+        'PORT' : '3306',
     }
 }
 
