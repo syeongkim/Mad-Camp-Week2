@@ -30,8 +30,8 @@ class Users(models.Model):
     name = models.CharField(max_length=20, default='unknown')
     nickname = models.CharField(max_length=20, unique=True, default='unknown')
     student_id = models.IntegerField(default=None, unique=True)
-    user_comment = models.TextField(null=True, blank=True, default="comment")
-    user_capacity = models.TextField(null=True, blank=True, default="comment")
+    user_comment = models.TextField(null=True, blank=True, default="각오 한마디")
+    user_capacity = models.TextField(null=True, blank=True, default="들은 과목과 기술 스택, 관심사를 적어주세요.")
     created_at = models.DateTimeField(auto_now_add=True)
     
 
