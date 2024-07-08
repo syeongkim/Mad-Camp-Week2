@@ -1,9 +1,12 @@
+
 import json
+from time import timezone
 from django.shortcuts import render
 import requests
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseRedirect
-from .models import MyUser
+from .models import MyUser, Users
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 # 어제 저녁까지의 코드
@@ -53,10 +56,10 @@ def kakao_callback(request):
     id = user_info_json.get('id')
 
     try:
-        debug = MyUser.objects.get(kakao_id=id)
+        debug = Users.objects.get(user_id=id)
         user_exists = True
         print("이미 존재하는 사용자입니다.")
-    except MyUser.DoesNotExist:
+    except Users.DoesNotExist:
         debug = None
         user_exists = False
         print("새로운 사용자입니다.")
@@ -99,17 +102,22 @@ def kakao_callback(request):
 
 #     return JsonResponse(user_info)
 
+@csrf_exempt
 def register(request):
-    user_id = request.GET.get('user_id')
-    name = request.GET.get('name')
-    nickname = request.GET.get('nickname')
-    student_id = request.GET.get('student_id')
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+        
+    user_id = body.get('user_id')
+    name = body.get('user_name')
+    nickname = body.get('user_nickname')
+    student_id = body.get('user_student_id')
+    print(user_id, name, nickname, student_id)
     
-    created = MyUser.objects.create(
-        kakao_id=user_id,
+    created = Users.objects.create(
+        user_id=user_id,
         name=name,
         nickname=nickname,
-        student_id=student_id
+        student_id=student_id,
     )
     
     if created:
