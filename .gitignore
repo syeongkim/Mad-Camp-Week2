@@ -5,7 +5,7 @@ venv/
 db.sqlite3
 
 #django의 pyc 파일들
-.pyc
+*.pyc
 
 #flutter test 폴더
 widget_test.dart
