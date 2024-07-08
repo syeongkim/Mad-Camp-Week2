@@ -50,3 +50,30 @@ def update(request, user_id):
     except Exception as e:
         print(e)
         return JsonResponse({"message": "error"}, safe=False) 
+    
+@csrf_exempt
+def edit(request, user_id):
+    try:
+        # 요청 본문에서 데이터를 가져옵니다.
+        body = json.loads(request.body.decode('utf-8'))
+        
+        # 사용자 인스턴스를 가져옵니다.
+        try:
+            user = Users.objects.get(user_id=user_id)
+        except Users.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        
+        # 데이터 업데이트
+        user.name = body.get('name', user.name)
+        user.nickname = body.get('nickname', user.nickname)
+        user.student_id = body.get('student_id', user.student_id)
+        user.user_comment = body.get('user_comment', user.user_comment)
+        user.user_capacity = body.get('user_capacity', user.user_capacity)
+        user.save()
+        
+        return JsonResponse({'message': 'User updated successfully'}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+

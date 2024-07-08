@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'myedit.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -56,6 +57,14 @@ class _MyPageState extends State<MyPage> {
   void _userEdit() {
     // 편집 버튼 클릭 시 수행할 동작 추가
     print('Edit button clicked');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyEdit(userInfo: userInfo),
+      ),
+    );
+
+    _fetchUserInfo(); // 사용자가 정보를 업데이트한 경우 다시 정보를 가져옴
   }
 
   @override
@@ -70,20 +79,23 @@ class _MyPageState extends State<MyPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            _buildInfo('Name', userInfo["name"]),
-            _buildInfo('Nickname', userInfo['nickname']),
-            _buildInfo('Comment', userInfo['user_comment']),
-            _buildInfo('Student ID', userInfo['student_id'].toString()),
-            _buildInfo('Capacity', userInfo['user_capacity']),
-            // _buildInfo('Courses Taken',
-            //     (userInfo['courses_taken_id'] as List).join(', ')),
-            // _buildInfo('Skills', (userInfo['skill'] as List).join(', ')),
-            _buildInfo('Created At', userInfo['created_at']),
-          ],
+      body: RefreshIndicator(
+        onRefresh: _fetchUserInfo,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildInfo('Name', userInfo["name"]),
+              _buildInfo('Nickname', userInfo['nickname']),
+              _buildInfo('Comment', userInfo['user_comment']),
+              _buildInfo('Student ID', userInfo['student_id'].toString()),
+              _buildInfo('Capacity', userInfo['user_capacity']),
+              // _buildInfo('Courses Taken',
+              //     (userInfo['courses_taken_id'] as List).join(', ')),
+              // _buildInfo('Skills', (userInfo['skill'] as List).join(', ')),
+              _buildInfo('Created At', userInfo['created_at']),
+            ],
+          ),
         ),
       ),
     );
