@@ -127,3 +127,29 @@ def teamrequests(request, request_id):
         return JsonResponse({'message': 'Request is successfully deleted'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
+    
+def team(request, team_id):
+    if request.method == 'GET':
+        team = Team.objects.get(team_id=team_id)
+        return JsonResponse(model_to_dict(team))
+    elif request.method == 'POST':
+        try:
+            team = get_object_or_404(Team, team_id=team_id)
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            
+            is_full = body.get('is_full')
+            is_finished = body.get('is_finished')
+            
+            if is_full is not None:
+                team.is_full = is_full
+            if is_finished is not None:
+                team.is_finished = is_finished
+            
+            team.save()
+            return JsonResponse({'message': 'Team updated successfully'})
+        except Exception as e:
+            return JsonResponse({'message': 'Failed to update team.' + e})
+        
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
