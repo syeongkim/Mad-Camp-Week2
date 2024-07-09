@@ -1,16 +1,11 @@
 import json
-from time import timezone
-from django.shortcuts import render
 import requests
-from django.conf import settings
-from django.http import JsonResponse, HttpResponseRedirect
-from .models import MyUser, Users, Reviews, Alarms, UserProfiles
+from django.http import JsonResponse
+from .models import *
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
-from .forms import ProfileImageForm
 
-@csrf_exempt
+@csrf_exempt  # CSRF 보호 비활성화 (필요에 따라 적용)
 def kakao_callback(request):
     access_token = request.GET.get('access_token')
     user_info_url = "https://kapi.kakao.com/v2/user/me"
@@ -23,63 +18,24 @@ def kakao_callback(request):
     user_info_json = user_info_response.json()
     print(user_info_json)
     id = user_info_json.get('id')
-    profile_image = user_info_json.get('properties').get('profile_image')
-    print(id, profile_image)
     
+    
+
     user_exists = Users.objects.filter(user_id=id).exists()
     if user_exists:
         print("이미 존재하는 사용자입니다.")
     else:
         print("새로운 사용자입니다.")
+        Users.objects.create(user_id=id)
 
     user_info = {
         'id': id,
-        'profile_image': profile_image,
         'is_exist': user_exists,
     }
-    
-    if profile_image:
-        image_response = requests.get(profile_image)
-        if image_response.status_code == 200:
-            profile_image_content = ContentFile(image_response.content)
 
-            # Create the UserProfiles instance
-            user_profile = UserProfiles(
-                user_id_id=id,
-            )
-            user_profile.profile_image.save(f'{id}.jpg', profile_image_content)
-            user_profile.save()
-        else:
-            print(f"Failed to download image: {profile_image}")
-    
     return JsonResponse(user_info)
 
-# @csrf_exempt
-# def user_profile(request, user_id):
-#     if request.method == 'GET':
-#         user_profile = UserProfiles.objects.filter(user_id=user_id).values()
-#         if user_profile:
-#             return JsonResponse(list(user_profile), safe=False)
-#     if request.method in ['POST', 'PUT']:
-#         user = get_object_or_404(Users, user_id=user_id)
 
-#         # Check if 'profile_image' is in request.FILES
-#         if 'profile_image' not in request.FILES:
-#             return JsonResponse({'status': 'error', 'message': 'No profile image provided.'})
-
-#         profile_image = request.FILES['profile_image']
-#         form = ProfileImageForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             user_profile, created = UserProfiles.objects.update_or_create(
-#                 user_id=user,
-#                 defaults={'profile_image': profile_image}
-#             )
-#             return JsonResponse({'status': 'success', 'message': 'Profile image updated successfully.'})
-#         else:
-#             return JsonResponse({'status': 'error', 'message': 'Form is not valid.'})
-#     else:
-#         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
-        
 @csrf_exempt
 def upload_review(request):
     body_unicode = request.body.decode('utf-8')
@@ -108,7 +64,7 @@ def select_reviews(request, reviewee_id):
         review_exists = Reviews.objects.filter(reviewee_id=reviewee_id)
         if review_exists:
             reviews = Reviews.objects.filter(reviewee_id=reviewee_id).values()
-            return JsonResponse(list(reviews))
+            return JsonResponse(list(reviews), safe=False)
         else:
             return JsonResponse({'message': 'No review found'})
     else:

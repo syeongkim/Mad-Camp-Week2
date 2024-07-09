@@ -51,6 +51,7 @@ def teamposts_course(request, course_id):
     else:
         return JsonResponse({'message': 'Invalid request method'})
         
+
 @csrf_exempt
 def teamposts_post(request, post_id):
     if request.method == 'GET':
@@ -198,25 +199,29 @@ def team(request, team_id):
         return JsonResponse(model_to_dict(team))
     elif request.method == 'PUT':
         try:
-            team = get_object_or_404(Team, team_id=team_id)
-            body_unicode = request.body.decode('utf-8')
-            body = json.loads(body_unicode)
+        # 요청 본문에서 JSON 데이터를 읽고 파싱합니다.
+            data = json.loads(request.body)
             
-            is_full = body.get('is_full')
-            is_finished = body.get('is_finished')
+            # team_id에 해당하는 팀을 가져옵니다.
+            team = Team.objects.get(pk=team_id)
             
-            if is_full is not None:
-                team.is_full = is_full
-            if is_finished is not None:
-                team.is_finished = is_finished
-            
-            team.save()
-            return JsonResponse({'message': 'Team updated successfully'})
+            # 요청 데이터에 'is_finished' 필드가 있는지 확인합니다.
+            if 'is_finished' in data:
+                # 'is_finished' 필드를 업데이트합니다.
+                team.is_finished = data['is_finished']
+                team.save()
+                
+                # 성공 응답을 반환합니다.
+                return JsonResponse({'status': 'success', 'message': 'Team finished successfully'})
+            else:
+                # 잘못된 데이터에 대한 오류 응답을 반환합니다.
+                return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
+        except Team.DoesNotExist:
+            # team_id에 해당하는 팀이 없는 경우의 오류 응답을 반환합니다.
+            return JsonResponse({'status': 'error', 'message': 'Team not found'}, status=404)
         except Exception as e:
-            return JsonResponse({'message': 'Failed to update team.' + e})
-        
-    else:
-        return JsonResponse({'message': 'Invalid request method'})
+            # 다른 오류에 대한 오류 응답을 반환합니다.
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @csrf_exempt
 def newteam(request):

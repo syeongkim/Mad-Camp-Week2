@@ -28,8 +28,8 @@ SECRET_KEY = 'django-insecure-$&s$=9!q(%me1*u0p7()mhs@9+!mf&*qkwj5gyk00pcwg9p(wa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.0.2.2',
-                 '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1',
+                 '54.180.158.144']
 
 
 # Application definition
@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'teammate.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testdb',
-        'USER' : 'root',
-        'PASSWORD' : '1234',
-        'HOST' : 'localhost',
+        'NAME': 'teammate',
+        'USER' : 'admin',
+        'PASSWORD' : '12341234',
+        'HOST' : 'database-2.c7sgu2c8sfbt.ap-northeast-2.rds.amazonaws.com',
         'PORT' : '3306',
     }
 }
