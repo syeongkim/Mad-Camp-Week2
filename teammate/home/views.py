@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.core.files.base import ContentFile
 from .forms import ProfileImageForm
 
-
+@csrf_exempt
 def kakao_callback(request):
     access_token = request.GET.get('access_token')
     user_info_url = "https://kapi.kakao.com/v2/user/me"
@@ -80,6 +80,7 @@ def kakao_callback(request):
 #     else:
 #         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
         
+@csrf_exempt
 def upload_review(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
@@ -100,7 +101,8 @@ def upload_review(request):
         return JsonResponse({'message': 'new review is successfully uploaded'})
     else:
         return JsonResponse({'message': 'failed to upload new review'})
-    
+
+@csrf_exempt
 def select_reviews(request, reviewee_id):
     if request.method == 'GET':
         review_exists = Reviews.objects.filter(reviewee_id=reviewee_id)
@@ -111,7 +113,8 @@ def select_reviews(request, reviewee_id):
             return JsonResponse({'message': 'No review found'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+@csrf_exempt
 def save_alarm(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
@@ -134,6 +137,7 @@ def save_alarm(request):
     else:
         return JsonResponse({'message': 'Invalid request method'})
 
+@csrf_exempt
 def select_alarm(request, receiver_id):
     if request.method == 'GET':
         alarm_exists = Alarms.objects.filter(receiver_id=receiver_id)

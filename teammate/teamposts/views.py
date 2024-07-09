@@ -38,7 +38,7 @@ def teamposts(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, safe=False)
     
-    
+@csrf_exempt
 def teamposts_course(request, course_id):
     if request.method == 'GET':
         post_exists = TeamPost.objects.filter(course_id=course_id)
@@ -51,7 +51,7 @@ def teamposts_course(request, course_id):
     else:
         return JsonResponse({'message': 'Invalid request method'})
         
-    
+
 @csrf_exempt
 def teamposts_post(request, post_id):
     if request.method == 'GET':
@@ -89,12 +89,14 @@ def teamposts_post(request, post_id):
         return JsonResponse({'message': 'Post updated successfully'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+@csrf_exempt
 def teampostdelete(request, post_id, user_id):
     post = get_object_or_404(TeamPost, post_id=post_id, leader_id=user_id)
     post.delete()
     return JsonResponse({'message': 'Post deleted successfully'})
-    
+
+@csrf_exempt
 def teamrequests(request, request_id):
     if (request.method == 'GET'):
         try:
@@ -127,7 +129,8 @@ def teamrequests(request, request_id):
         return JsonResponse({'message': 'Request is successfully deleted'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+@csrf_exempt
 def team(request, team_id):
     if request.method == 'GET':
         team = Team.objects.get(team_id=team_id)
@@ -153,7 +156,8 @@ def team(request, team_id):
         
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+@csrf_exempt
 def newteam(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
