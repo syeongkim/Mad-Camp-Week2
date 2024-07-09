@@ -57,7 +57,7 @@ class Reviews(models.Model):
     
 class Alarms(models.Model):
     alarm_id = models.AutoField(primary_key=True, unique=True)
-    receiver_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='users')
+    receiver_id = models.BigIntegerField()
     type = models.CharField(max_length=20)
     message = models.TextField()
     read = models.BooleanField(default=False)

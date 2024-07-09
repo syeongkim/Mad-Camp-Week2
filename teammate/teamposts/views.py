@@ -107,7 +107,32 @@ def teamrequests(request, request_id):
             return JsonResponse(model_to_dict(request))
         except TeamRequest.DoesNotExist:
             return JsonResponse({'message': 'No post found'})
-    elif (request.method == 'POST'):
+    elif (request.method == 'PUT'):
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        
+        is_accepted = body.get('is_accepted')
+        accepted_at = body.get('accepted_at')
+        
+        request = get_object_or_404(TeamRequest, request_id=request_id)
+        
+        if is_accepted is not None:
+            request.is_accepted = is_accepted
+        if accepted_at is not None:
+            request.accepted_at = accepted_at
+        
+        request.save()
+        return JsonResponse({'message': 'Request is successfully updated'})
+    elif (request.method == 'DELETE'):
+        request = get_object_or_404(TeamRequest, request_id=request_id)
+        request.delete()
+        return JsonResponse({'message': 'Request is successfully deleted'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
+
+@csrf_exempt
+def save_request(request):
+    if (request.method == 'POST'):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         
@@ -117,22 +142,18 @@ def teamrequests(request, request_id):
             member_id = body.get('member_id')
             request_content = body.get('request_content')
            
-            TeamRequest.objects.create(
+            request = TeamRequest.objects.create(
                post_id=post_id,
                leader_id=leader_id,
                member_id=member_id,
-               request_content=request_content,
+               request_comment=request_content,
             )
-            return JsonResponse({'message': 'Request is successfully saved'})
-        except:
-            return JsonResponse({'message': 'Failed to save request'})
-    elif (request.method == 'DELETE'):
-        request = get_object_or_404(TeamRequest, request_id=request_id)
-        request.delete()
-        return JsonResponse({'message': 'Request is successfully deleted'})
+            return JsonResponse({'message': 'Request is successfully saved' + str(request.request_id)}, safe=False)
+        except Exception as e:
+            return JsonResponse({'message': str(e)})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
 def myteample(request, user_id):
     print(user_id)
     if request.method == 'GET':

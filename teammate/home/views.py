@@ -133,9 +133,9 @@ def save_alarm(request):
 @csrf_exempt
 def select_alarm(request, receiver_id):
     if request.method == 'GET':
-        alarm_exists = Alarms.objects.filter(receiver_id=receiver_id)
+        alarm_exists = Alarms.objects.filter(receiver_id=receiver_id).exists()
         if alarm_exists:
-            alarms = Alarms.objects.filter(receiver_id=receiver_id).values()
+            alarms = Alarms.objects.filter(receiver_id=receiver_id).order_by('-created_at').values()
             return JsonResponse(list(alarms), safe=False)
         else:
             return JsonResponse({'message': 'No alarm found'})
