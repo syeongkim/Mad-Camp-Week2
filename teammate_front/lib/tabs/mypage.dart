@@ -21,10 +21,13 @@ class _MyPageState extends State<MyPage> {
     'created_at': ""
   };
 
+  Map<String, dynamic> userReviews = [];
+
   @override
   void initState() {
     super.initState();
     _fetchUserInfo();
+    _fetchUserReviews();
   }
 
   Future<void> _fetchUserInfo() async {
@@ -37,20 +40,37 @@ class _MyPageState extends State<MyPage> {
             Uri.parse('http://$apiurl:8000/user/update/$userId').replace();
         http.Response response = await http.get(uri);
         setState(() {
-          // 사용자 정보를 가져와서 상태 변경
           userInfo = json.decode(response.body) as Map<String, dynamic>;
         });
       }
     } catch (e) {
-      // 요청 실패 시 사용자에게 알림
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('사용자 정보 가져오기 실패: $e'),
       ));
     }
   }
 
+  Future<void> _fetchUserReviews() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? userId = prefs.getInt('userId');
+
+      if (userId != null) {
+        final Uri uri =
+            Uri.parse('http://$apiurl:8000/reviews/$userId').replace();
+        http.Response response = await http.get(uri);
+        setState(() {
+          userInfo = json.decode(response.body) as Map<String, dynamic>;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('리뷰 가져오기 실패: $e'),
+      ));
+    }
+  }
+
   Future<void> _userEdit() async {
-    // 편집 버튼 클릭 시 수행할 동작 추가
     final updated = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -59,7 +79,8 @@ class _MyPageState extends State<MyPage> {
     );
 
     if (updated == true) {
-      _fetchUserInfo(); // 사용자가 정보를 업데이트한 경우 다시 정보를 가져옴
+      _fetchUserInfo();
+      _fetchUserReviews();
     }
   }
 
@@ -76,7 +97,10 @@ class _MyPageState extends State<MyPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _fetchUserInfo,
+        onRefresh: () async {
+          await _fetchUserInfo();
+          await _fetchUserReviews();
+        },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
@@ -86,10 +110,11 @@ class _MyPageState extends State<MyPage> {
               _buildInfo('Comment', userInfo['user_comment']),
               _buildInfo('Student ID', userInfo['student_id'].toString()),
               _buildInfo('Capacity', userInfo['user_capacity']),
-              // _buildInfo('Courses Taken',
-              //     (userInfo['courses_taken_id'] as List).join(', ')),
-              // _buildInfo('Skills', (userInfo['skill'] as List).join(', ')),
               _buildInfo('Created At', userInfo['created_at']),
+              SizedBox(height: 16.0),
+              Text('Reviews',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              _buildReviewsList(),
             ],
           ),
         ),
@@ -104,6 +129,25 @@ class _MyPageState extends State<MyPage> {
         title: Text(label),
         subtitle: Text(info),
       ),
+    );
+  }
+
+  Widget _buildReviewsList() {
+    if (userReviews.isEmpty) {
+      return Center(child: Text('No reviews found'));
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: userReviews.length,
+      itemBuilder: (context, index) {
+        final review = userReviews[index];
+        return ListTile(
+          title: Text(review['score'] ?? 'No title'),
+          subtitle: Text(review['content'] ?? 'No content'),
+        );
+      },
     );
   }
 }
