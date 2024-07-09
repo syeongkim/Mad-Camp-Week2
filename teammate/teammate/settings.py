@@ -85,9 +85,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'teammate',
-        'USER' : 'admin',
-        'PASSWORD' : '12341234',
-        'HOST' : 'database-2.c7sgu2c8sfbt.ap-northeast-2.rds.amazonaws.com',
+        'USER' : 'root',
+        'PASSWORD' : '1234',
+        'HOST' : 'localhost',
         'PORT' : '3306',
     }
 }
