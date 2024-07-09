@@ -23,11 +23,8 @@ class MyUser(AbstractBaseUser):
     def __str__(self):
         return str(self.kakao_id)
     
-
-    
 class Users(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
-    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     name = models.CharField(max_length=20, default='unknown')
     nickname = models.CharField(max_length=20, unique=True, default='unknown')
     student_id = models.IntegerField(default=None, unique=True)
@@ -36,6 +33,13 @@ class Users(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
 
+    def __str__(self):
+        return str(self.user_id)
+    
+class UserProfiles(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='profiles')
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    
     def __str__(self):
         return str(self.user_id)
     
@@ -59,3 +63,10 @@ class Alarms(models.Model):
     
     def __str__(self):
         return str(self.alarm_id)
+    
+class CourseList(models.Model):
+    course_code = models.CharField(max_length=20, primary_key=True, unique=True)
+    course_name = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return str(self.course_id)

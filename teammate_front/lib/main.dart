@@ -5,6 +5,7 @@ import 'tabs/board.dart';
 import 'tabs/chat.dart';
 import 'tabs/mypage.dart';
 import 'tabs/newpost.dart';
+import 'tabs/myteam.dart';
 import 'services/login.dart';
 
 void main() {
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _tabs = [
     Board(),
-    TeamChat(),
+    MyTeam(),
     MyPage(),
   ];
 
@@ -117,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            label: '팀챗',
+            label: '내 팀플',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

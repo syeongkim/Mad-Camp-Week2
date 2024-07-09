@@ -29,6 +29,7 @@ urlpatterns = [
     path('reviews/<int:reviewee_id>', select_reviews, name='select_reviews'),
     path('alarm', save_alarm, name='save_alarm'),
     path('alarm/<int:receiver_id>', select_alarm, name='select_alarm'),
+    # path('user/profile/<int:user_id>', user_profile, name='select_profile'),
     # path('user/register', register, name='register'),
     path('user/', include('user.urls')),
     path('teamposts/', include('teamposts.urls'))
