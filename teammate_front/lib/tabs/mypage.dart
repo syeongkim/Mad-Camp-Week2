@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'myedit.dart';
 import 'package:teammate_front/config.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _MyPageState extends State<MyPage> {
     'created_at': ""
   };
 
-  Map<String, dynamic> userReviews = [];
+  List<dynamic> userReviews = [];
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _MyPageState extends State<MyPage> {
             Uri.parse('http://$apiurl:8000/reviews/$userId').replace();
         http.Response response = await http.get(uri);
         setState(() {
-          userInfo = json.decode(response.body) as Map<String, dynamic>;
+          userReviews = json.decode(response.body) as List<dynamic>;
         });
       }
     } catch (e) {
@@ -143,8 +144,18 @@ class _MyPageState extends State<MyPage> {
       itemCount: userReviews.length,
       itemBuilder: (context, index) {
         final review = userReviews[index];
+        final score = review['score'] != null ? review['score'].toDouble() : 0.0;
         return ListTile(
-          title: Text(review['score'] ?? 'No title'),
+          title: RatingBarIndicator(
+            rating: score,
+            itemBuilder: (context, index) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            itemCount: 5,
+            itemSize: 20.0,
+            direction: Axis.horizontal,
+          ),
           subtitle: Text(review['content'] ?? 'No content'),
         );
       },
