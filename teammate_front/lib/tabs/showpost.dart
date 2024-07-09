@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -112,6 +113,47 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       },
     );
   }
+  Future<void> _sendAlarm(String alarmType, Map<String, dynamic> post) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? nickname = prefs.getString('nickname');
+
+    try {
+      //String message = 'nickname님으로부터 함께하기 요청을 받았습니다';
+      // switch(alarmType) {
+      //   case 'request':
+      //     message = 'nickname님으로부터 함께하기 요청을 받았습니다';
+      //   case 'answer':
+      //     message = '';
+      //   case 'reminder':
+      //     message = '';
+      // }
+      //print(message);
+      var alarmData = {
+        'receiver_id': post['leader_id_id'],
+        'type': alarmType,
+        'message': 'nickname님으로부터 함께하기 요청을 받았습니다'
+        // 'message': "땡땡님으로부터 요청이 들어왔습니다!",
+        // 'read': post[],
+        // 'created_at': post[]
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/alarm'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(alarmData),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Failed to send alarm: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error sending alarm: $e');
+      return null;
+    }
+  }
 
   void _showDeleteConfirmationDialog(int postId, int leaderId) {
     showDialog(
@@ -193,15 +235,16 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        if (widget.post['leader_id_id'] > 0)
-          ElevatedButton(
-            child: Text('삭제'),
-            onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id_id']),
-          )
-        else
+        // if (widget.post['leader_id_id'] > 0)
+        //   ElevatedButton(
+        //     child: Text('삭제'),
+        //     onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id_id']),
+        //   )
+        // else
           ElevatedButton(
             child: Text('요청'),
             onPressed: () {
+              _sendAlarm('request', widget.post);
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text('요청되었습니다!'),

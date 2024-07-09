@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'tabs/board.dart';
-import 'tabs/chat.dart';
 import 'tabs/mypage.dart';
-import 'tabs/newpost.dart';
 import 'tabs/myteam.dart';
 import 'services/login.dart';
 
