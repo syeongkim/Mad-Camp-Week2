@@ -4,9 +4,11 @@ from django.shortcuts import render
 import requests
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseRedirect
-from .models import MyUser, Users, Reviews, Alarms
+from .models import MyUser, Users, Reviews, Alarms, UserProfiles
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.core.files.base import ContentFile
+from .forms import ProfileImageForm
 
 
 def kakao_callback(request):
@@ -21,6 +23,8 @@ def kakao_callback(request):
     user_info_json = user_info_response.json()
     print(user_info_json)
     id = user_info_json.get('id')
+    profile_image = user_info_json.get('properties').get('profile_image')
+    print(id, profile_image)
     
     user_exists = Users.objects.filter(user_id=id).exists()
     if user_exists:
@@ -30,10 +34,52 @@ def kakao_callback(request):
 
     user_info = {
         'id': id,
+        'profile_image': profile_image,
         'is_exist': user_exists,
     }
+    
+    if profile_image:
+        image_response = requests.get(profile_image)
+        if image_response.status_code == 200:
+            profile_image_content = ContentFile(image_response.content)
+
+            # Create the UserProfiles instance
+            user_profile = UserProfiles(
+                user_id_id=id,
+            )
+            user_profile.profile_image.save(f'{id}.jpg', profile_image_content)
+            user_profile.save()
+        else:
+            print(f"Failed to download image: {profile_image}")
+    
     return JsonResponse(user_info)
 
+@csrf_exempt
+def user_profile(request, user_id):
+    if request.method == 'GET':
+        user_profile = UserProfiles.objects.filter(user_id=user_id).values()
+        if user_profile:
+            return JsonResponse(list(user_profile), safe=False)
+    if request.method in ['POST', 'PUT']:
+        user = get_object_or_404(Users, user_id=user_id)
+
+        # Check if 'profile_image' is in request.FILES
+        if 'profile_image' not in request.FILES:
+            return JsonResponse({'status': 'error', 'message': 'No profile image provided.'})
+
+        profile_image = request.FILES['profile_image']
+        form = ProfileImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile, created = UserProfiles.objects.update_or_create(
+                user_id=user,
+                defaults={'profile_image': profile_image}
+            )
+            return JsonResponse({'status': 'success', 'message': 'Profile image updated successfully.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Form is not valid.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+        
 def upload_review(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)

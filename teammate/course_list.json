@@ -1,0 +1,246 @@
+[
+    {
+        "course_code": "CS101",
+        "course_name": "프로그래밍기초"
+    },
+    {
+        "course_code": "CS109",
+        "course_name": "프로그래밍 실습"
+    },
+    {
+        "course_code": "CS202",
+        "course_name": "문제해결기법"
+    },
+    {
+        "course_code": "CS211",
+        "course_name": "디지탈시스템 및 실험"
+    },
+    {
+        "course_code": "CS220",
+        "course_name": "프로그래밍의 이해"
+    },
+    {
+        "course_code": "CS230",
+        "course_name": "시스템 프로그래밍"
+    },
+    {
+        "course_code": "CS270",
+        "course_name": "지능 로봇 설계 및 프로그래밍"
+    },
+    {
+        "course_code": "CS310",
+        "course_name": "내장형 컴퓨터 시스템"
+    },
+    {
+        "course_code": "CS322",
+        "course_name": "형식언어 및 오토마타"
+    },
+    {
+        "course_code": "CS341",
+        "course_name": "전산망개론"
+    },
+    {
+        "course_code": "CS348",
+        "course_name": "정보보호개론"
+    },
+    {
+        "course_code": "CS350",
+        "course_name": "소프트웨어 공학개론"
+    },
+    {
+        "course_code": "CS360",
+        "course_name": "데이타베이스 개론"
+    },
+    {
+        "course_code": "CS361",
+        "course_name": "데이터 사이언스 개론"
+    },
+    {
+        "course_code": "CS370",
+        "course_name": "심볼릭 프로그래밍"
+    },
+    {
+        "course_code": "CS371",
+        "course_name": "딥러닝 개론"
+    },
+    {
+        "course_code": "CS372",
+        "course_name": "파이썬을 통한 자연언어처리"
+    },
+    {
+        "course_code": "CS374",
+        "course_name": "인간-컴퓨터 상호작용 개론"
+    },
+    {
+        "course_code": "CS376",
+        "course_name": "기계학습"
+    },
+    {
+        "course_code": "CS380",
+        "course_name": "컴퓨터그래픽스 개론"
+    },
+    {
+        "course_code": "CS402",
+        "course_name": "전산논리학 개론"
+    },
+    {
+        "course_code": "CS408",
+        "course_name": "전산학 프로젝트"
+    },
+    {
+        "course_code": "CS409",
+        "course_name": "산학협업 소프트웨어 프로젝트"
+    },
+    {
+        "course_code": "CS411",
+        "course_name": "인공지능을 위한 시스템"
+    },
+    {
+        "course_code": "CS420",
+        "course_name": "컴파일러 설계"
+    },
+    {
+        "course_code": "CS422",
+        "course_name": "계산이론"
+    },
+    {
+        "course_code": "CS423",
+        "course_name": "확률적 프로그래밍"
+    },
+    {
+        "course_code": "CS431",
+        "course_name": "동시성 프로그래밍"
+    },
+    {
+        "course_code": "CS442",
+        "course_name": "모바일 컴퓨팅과 응용"
+    },
+    {
+        "course_code": "CS443",
+        "course_name": "분산 알고리즘 및 시스템"
+    },
+    {
+        "course_code": "CS447",
+        "course_name": "웹 보안 공격 실습"
+    },
+    {
+        "course_code": "CS453",
+        "course_name": "소프트웨어 테스팅 자동화 기법"
+    },
+    {
+        "course_code": "CS454",
+        "course_name": "인공 지능 기반 소프트웨어 공학"
+    },
+    {
+        "course_code": "CS457",
+        "course_name": "스마트환경을 위한 요구공학"
+    },
+    {
+        "course_code": "CS458",
+        "course_name": "소프트웨어 소스 코드 기반 동적 분석"
+    },
+    {
+        "course_code": "CS459",
+        "course_name": "서비스 컴퓨팅 개론"
+    },
+    {
+        "course_code": "CS470",
+        "course_name": "인공지능개론"
+    },
+    {
+        "course_code": "CS471",
+        "course_name": "그래프 기계학습 및 마이닝"
+    },
+    {
+        "course_code": "CS473",
+        "course_name": "소셜 컴퓨팅 개론"
+    },
+    {
+        "course_code": "CS474",
+        "course_name": "텍스트마이닝"
+    },
+    {
+        "course_code": "CS475",
+        "course_name": "자연언어처리를 위한 기계학습"
+    },
+    {
+        "course_code": "CS477",
+        "course_name": "지능로봇공학 개론"
+    },
+    {
+        "course_code": "CS479",
+        "course_name": "3차원 데이터를 위한 기계 학습"
+    },
+    {
+        "course_code": "CS481",
+        "course_name": "데이터 시각화"
+    },
+    {
+        "course_code": "CS482",
+        "course_name": "대화형 컴퓨터그래픽스"
+    },
+    {
+        "course_code": "CS483",
+        "course_name": "기하학적 모델링 및 처리"
+    },
+    {
+        "course_code": "CS484",
+        "course_name": "컴퓨터비전개론"
+    },
+    {
+        "course_code": "CS485",
+        "course_name": "컴퓨터비전을 위한 기계학습"
+    },
+    {
+        "course_code": "CS486",
+        "course_name": "웨어러블 사용자 인터페이스"
+    },
+    {
+        "course_code": "CS489",
+        "course_name": "컴퓨터 윤리와 사회문제"
+    },
+    {
+        "course_code": "CS492",
+        "course_name": "전산학특강"
+    },
+    {
+        "course_code": "CS493",
+        "course_name": "전산학 특강 I"
+    },
+    {
+        "course_code": "CS494",
+        "course_name": "전산학특강 Ⅱ"
+    },
+    {
+        "course_code": "CS204",
+        "course_name": "이산구조"
+    },
+    {
+        "course_code": "CS206",
+        "course_name": "데이타구조"
+    },
+    {
+        "course_code": "CS300",
+        "course_name": "알고리즘 개론"
+    },
+    {
+        "course_code": "CS311",
+        "course_name": "전산기조직"
+    },
+    {
+        "course_code": "CS320",
+        "course_name": "프로그래밍 언어"
+    },
+    {
+        "course_code": "CS330",
+        "course_name": "운영체제 및 실험"
+    },
+    {
+        "course_code": "CS490",
+        "course_name": "졸업연구"
+    },
+    {
+        "course_code": "CS495",
+        "course_name": "개별연구"
+    }
+]
