@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'newpost.dart';  // newpost.dart 파일 가져오기
+import 'newpost.dart'; // newpost.dart 파일 가져오기
 
 class Board extends StatelessWidget {
   const Board({Key? key}) : super(key: key);
@@ -31,9 +31,15 @@ class SubjectList extends StatefulWidget {
 
 class SubjectListState extends State<SubjectList> {
   List<String> subjects = [
-    "Math 0", "Science 0", "History 0",
-    "Math 10", "Science 10", "History 10",
-    "Math 20", "Science 20", "History 20",
+    "Math 0",
+    "Science 0",
+    "History 0",
+    "Math 10",
+    "Science 10",
+    "History 10",
+    "Math 20",
+    "Science 20",
+    "History 20",
   ]; // 예제 과목 목록
 
   Map<String, List<String>> categorizedSubjects = {};
@@ -59,13 +65,14 @@ class SubjectListState extends State<SubjectList> {
 
   Future<void> loadposts() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/teamposts/teamposts'));
+      final response =
+          await http.get(Uri.parse('http://10.0.2.2:8000/teamposts/teamposts'));
 
       if (response.statusCode == 200) {
         setState(() {
           allPosts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
         });
-        print('All posts loaded: $allPosts');
+        // print('All posts loaded: $allPosts');
       } else {
         print('Failed to load posts: ${response.statusCode}');
       }
@@ -101,7 +108,8 @@ class SubjectListState extends State<SubjectList> {
                           selectedSubject = null; // 섹션이 변경되면 과목 선택 초기화
                         });
                       },
-                      items: categorizedSubjects.keys.map<DropdownMenuItem<String>>((String value) {
+                      items: categorizedSubjects.keys
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -120,7 +128,8 @@ class SubjectListState extends State<SubjectList> {
                             selectedSubject = newValue;
                           });
                         },
-                        items: categorizedSubjects[selectedCategory]!.map<DropdownMenuItem<String>>((String value) {
+                        items: categorizedSubjects[selectedCategory]!
+                            .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -134,7 +143,8 @@ class SubjectListState extends State<SubjectList> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SubjectBoard(subject: selectedSubject!),
+                            builder: (context) =>
+                                SubjectBoard(subject: selectedSubject!),
                           ),
                         ).then((_) => loadposts()); // 돌아왔을 때 전체 기사 로드
                       },
@@ -149,8 +159,10 @@ class SubjectListState extends State<SubjectList> {
                 itemBuilder: (context, index) {
                   var post = allPosts[index];
                   return ListTile(
-                    title: Text(post['post_title'] ?? 'No Title'),  // null인 경우 기본값 사용
-                    subtitle: Text('Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                    title: Text(
+                        post['post_title'] ?? 'No Title'), // null인 경우 기본값 사용
+                    subtitle: Text(
+                        'Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
                     isThreeLine: true,
                     onTap: () => _showPostDetailsDialog(context, post),
                   );
@@ -176,7 +188,8 @@ class SubjectListState extends State<SubjectList> {
                 Text('Leader ID: ${post['leader_id'] ?? 'N/A'}'),
                 Text('Content: ${post['post_content'] ?? 'N/A'}'),
                 Text('Capacity: ${post['member_limit'] ?? 'N/A'}'),
-                Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                Text(
+                    'Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
               ],
             ),
           ),
@@ -210,7 +223,7 @@ class SubjectBoard extends StatefulWidget {
 }
 
 class _SubjectBoardState extends State<SubjectBoard> {
-  List<Map<String, dynamic>> subjectDetails = [];  //특정 과목의 전체 게시글
+  List<Map<String, dynamic>> subjectDetails = []; //특정 과목의 전체 게시글
 
   @override
   void initState() {
@@ -233,7 +246,8 @@ class _SubjectBoardState extends State<SubjectBoard> {
 
       if (response.statusCode == 200) {
         setState(() {
-          subjectDetails = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+          subjectDetails =
+              List<Map<String, dynamic>>.from(jsonDecode(response.body));
           print("subject posts loaded");
         });
       } else {
@@ -244,7 +258,8 @@ class _SubjectBoardState extends State<SubjectBoard> {
     }
   }
 
-  Future<void> savepost(String title, String comment, int capacity, DateTime dueDate) async {
+  Future<void> savepost(
+      String title, String comment, int capacity, DateTime dueDate) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
 
@@ -268,7 +283,7 @@ class _SubjectBoardState extends State<SubjectBoard> {
 
       if (response.statusCode == 200) {
         setState(() {
-          subjectDetails.add(jsonDecode(response.body));  // 서버에서 반환된 데이터로 업데이트
+          subjectDetails.add(jsonDecode(response.body)); // 서버에서 반환된 데이터로 업데이트
         });
         await loadSubjectDetails();
         //await _updateSubjectposts();
@@ -290,11 +305,13 @@ class _SubjectBoardState extends State<SubjectBoard> {
 
     //여기에서 방금 저장한 포스트까지 반영해서 불러오기
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/teamposts/courses/${widget.subject}'));
+      final response = await http.get(Uri.parse(
+          'http://10.0.2.2:8000/teamposts/courses/${widget.subject}'));
 
       if (response.statusCode == 200) {
         setState(() {
-          subjectDetails = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+          subjectDetails =
+              List<Map<String, dynamic>>.from(jsonDecode(response.body));
         });
         print('All posts loaded: $subjectDetails');
       } else {
@@ -325,8 +342,10 @@ class _SubjectBoardState extends State<SubjectBoard> {
                 itemBuilder: (context, index) {
                   var post = subjectDetails[index];
                   return ListTile(
-                    title: Text(post['post_title'] ?? 'No Title'),  // null인 경우 기본값 사용
-                    subtitle: Text('Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                    title: Text(
+                        post['post_title'] ?? 'No Title'), // null인 경우 기본값 사용
+                    subtitle: Text(
+                        'Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
                     isThreeLine: true,
                     onTap: () => _showPostDetailsDialog(context, post),
                   );
@@ -356,7 +375,8 @@ class _SubjectBoardState extends State<SubjectBoard> {
                 Text('Leader ID: ${post['leader_id'] ?? 'N/A'}'),
                 Text('Content: ${post['post_content'] ?? 'N/A'}'),
                 Text('Capacity: ${post['member_limit'] ?? 'N/A'}'),
-                Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                Text(
+                    'Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
               ],
             ),
           ),
@@ -378,5 +398,4 @@ class _SubjectBoardState extends State<SubjectBoard> {
       },
     );
   }
-
 }

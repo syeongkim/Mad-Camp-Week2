@@ -122,3 +122,62 @@ def teamrequests(request, request_id):
         return JsonResponse({'message': 'Request is successfully deleted'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
+    
+def myteample(request, user_id):
+    print(user_id)
+    if request.method == 'GET':
+        try:
+            user = Users.objects.get(pk=user_id)
+        except Users.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        # 사용자가 참여하고 있는 팀의 목록을 가져옵니다.
+        memberships = TeamMembership.objects.filter(member=user)
+
+        # 팀 정보를 가져옵니다.
+        teams = []
+        for membership in memberships:
+            team = membership.team
+            try:
+                leader = Users.objects.get(pk=team.leader_id_id)
+            except Users.DoesNotExist:
+                leader_name = "Unknown"  # 리더가 없는 경우 처리
+            else:
+                leader_name = leader.name  # Users 모델에 username 필드가 있다고 가정합니다.
+            
+            teams.append({
+                "team_id": team.team_id,
+                "course_id": team.course_id,
+                "leader_name": leader_name,
+                "is_full": team.is_full,
+                "is_finished": team.is_finished
+            })
+            print(teams)
+
+        # JSON 형식으로 응답합니다.
+        return JsonResponse(teams, safe=False)
+
+def myteammember(requset, team_id):
+    try:
+        # 팀 아이디를 통해 팀 멤버십을 찾습니다.
+        memberships = TeamMembership.objects.filter(team_id=team_id)
+        if not memberships.exists():
+            return JsonResponse({'error': 'No members found for this team'}, status=404)
+        
+        # 팀 멤버십을 통해 유저 정보를 가져옵니다.
+        members = []
+        for membership in memberships:
+            user = membership.member  # TeamMembership 모델에 member 필드가 있다고 가정합니다.
+            members.append({
+                'user_id': user.user_id,
+                'name': user.name,
+                'student_id': user.student_id
+            })
+        
+        # JSON 형식으로 응답합니다.
+        return JsonResponse(members, safe=False)
+    
+    except TeamMembership.DoesNotExist:
+        return JsonResponse({'error': 'Team not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

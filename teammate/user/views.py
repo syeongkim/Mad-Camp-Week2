@@ -75,4 +75,21 @@ def edit(request, user_id):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+def view(request, user_id):
+    try:
+        user = Users.objects.get(pk=user_id)
+        user_data = {
+            "name": user.name,
+            "nickname": user.nickname,
+            "student_id": user.student_id,
+            "user_comment": user.user_comment,
+            "user_capacity": user.user_capacity,
+        }
+        return JsonResponse(user_data)
+    except Users.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+  
 
