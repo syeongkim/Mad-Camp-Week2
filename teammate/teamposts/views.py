@@ -72,7 +72,7 @@ def teamposts_post(request, post_id):
         member_limit = body.get('member_limit')
         due_date = body.get('due_date')
         
-        post = get_object_or_404(TeamPost, course_id=course_id)
+        post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
 
         if post_title is not None:
             post.post_title = post_title
