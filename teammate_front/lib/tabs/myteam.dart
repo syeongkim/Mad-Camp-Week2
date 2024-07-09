@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:teammate_front/config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:teammate_front/config.dart';
 import 'profile.dart';
 
 class MyTeam extends StatefulWidget {
@@ -32,26 +32,14 @@ class _MyTeamPageState extends State<MyTeam> {
     final response = await http
         .get(Uri.parse('http://$apiurl:8000/teamposts/myteample/$userId'));
     print(response.body);
-    try {
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        setState(() {
-          myTeample = List<Map<String, dynamic>>.from(data);
-        });
-      } else {
-        throw Exception('Failed to load team data');
-      }
-    } catch (e) {
-      print(e);
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        myTeample = List<Map<String, dynamic>>.from(data);
+      });
+    } else {
+      throw Exception('Failed to load team data');
     }
-    // if (response.statusCode == 200) {
-    //   List<dynamic> data = json.decode(response.body);
-    //   setState(() {
-    //     myTeample = List<Map<String, dynamic>>.from(data);
-    //   });
-    // } else {
-    //   throw Exception('Failed to load team data');
-    // }
   }
 
   Future<List<Map<String, dynamic>>> _fetchTeamMembers(teamId) async {
@@ -61,9 +49,7 @@ class _MyTeamPageState extends State<MyTeam> {
         .get(Uri.parse('http://$apiurl:8000/teamposts/myteammember/$team_id'));
     print(response.body);
     if (response.statusCode == 200) {
-      print('여기에러1');
       List<dynamic> data = json.decode(response.body);
-      print('여기에러2');
       return List<Map<String, dynamic>>.from(data);
     } else {
       throw Exception('Failed to load team members');
@@ -72,6 +58,8 @@ class _MyTeamPageState extends State<MyTeam> {
 
   void _showTeamMembersDialog(int teamId) async {
     List<Map<String, dynamic>> teamMembers = await _fetchTeamMembers(teamId);
+    http.Response response = await http
+        .get(Uri.parse("http://$apiurl:8000/teamposts/team/$teamId"));
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -175,6 +163,24 @@ class TeamList extends StatelessWidget {
 
   TeamList({required this.teams, required this.showTeamMembersDialog});
 
+  Future<void> _finishTeam(int teamId) async {
+    final response = await http.put(
+      Uri.parse('http://$apiurl:8000/teamposts/team/$teamId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'is_finished': true,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Team finished successfully');
+    } else {
+      throw Exception('Failed to finish team');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -185,8 +191,39 @@ class TeamList extends StatelessWidget {
           onTap: () {
             showTeamMembersDialog(team['team_id']);
           },
+          trailing: FutureBuilder<int?>(
+            future: _getCurrentUserId(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error');
+              } else {
+                int? userId = snapshot.data;
+                if (userId == team['leader_id'] &&
+                    team['is_full'] == true &&
+                    team['is_finished'] == false) {
+                  return TextButton(
+                    onPressed: () async {
+                      await _finishTeam(team['team_id']);
+                      // 상태를 업데이트하여 UI를 새로고침합니다.
+                      (context as Element).markNeedsBuild();
+                    },
+                    child: Text('팀플 끝내기'),
+                  );
+                } else {
+                  return Container();
+                }
+              }
+            },
+          ),
         );
       }).toList(),
     );
+  }
+
+  Future<int?> _getCurrentUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('userId');
   }
 }
