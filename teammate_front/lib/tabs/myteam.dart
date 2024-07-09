@@ -32,14 +32,26 @@ class _MyTeamPageState extends State<MyTeam> {
     final response = await http
         .get(Uri.parse('http://$apiurl:8000/teamposts/myteample/$userId'));
     print(response.body);
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      setState(() {
-        myTeample = List<Map<String, dynamic>>.from(data);
-      });
-    } else {
-      throw Exception('Failed to load team data');
+    try {
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          myTeample = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        throw Exception('Failed to load team data');
+      }
+    } catch (e) {
+      print(e);
     }
+    // if (response.statusCode == 200) {
+    //   List<dynamic> data = json.decode(response.body);
+    //   setState(() {
+    //     myTeample = List<Map<String, dynamic>>.from(data);
+    //   });
+    // } else {
+    //   throw Exception('Failed to load team data');
+    // }
   }
 
   Future<List<Map<String, dynamic>>> _fetchTeamMembers(teamId) async {
