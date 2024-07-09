@@ -54,7 +54,7 @@ class Reviews(models.Model):
     
     def __str__(self):
         return str(self.review_id)
-    
+
 class Alarms(models.Model):
     alarm_id = models.AutoField(primary_key=True, unique=True)
     receiver_id = models.BigIntegerField()
@@ -65,6 +65,7 @@ class Alarms(models.Model):
     
     def __str__(self):
         return str(self.alarm_id)
+
     
 class CourseList(models.Model):
     course_code = models.CharField(max_length=20, primary_key=True, unique=True)

@@ -14,3 +14,6 @@ widget_test.dart
 
 #AWS
 keypair.pem
+
+#settings.py
+teammate/teammate/settings.py

@@ -114,7 +114,7 @@ def save_alarm(request):
         try:
             receiver = Users.objects.get(user_id=receiver_id)
             created = Alarms.objects.create(
-                receiver_id=receiver,
+                receiver_id=receiver_id,
                 type=type,
                 message=message,
             )

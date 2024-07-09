@@ -163,7 +163,7 @@ def myteample(request, user_id):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         # 사용자가 참여하고 있는 팀의 목록을 가져옵니다.
-        memberships = TeamMembership.objects.filter(member_id=user).values()
+        memberships = TeamMembership.objects.filter(member_id=user_id).values()
 
         # 팀 정보를 가져옵니다.
         teams = []
