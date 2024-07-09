@@ -24,7 +24,7 @@ def teamposts(request):
             TeamPost.objects.create(
                 post_title=post_title,
                 course_id=course_id,
-                leader_id_id=leader_id,
+                leader_id=leader_id,
                 post_content=post_content,
                 member_limit=member_limit,
                 due_date=due_date,
@@ -170,7 +170,7 @@ def myteample(request, user_id):
         for membership in memberships:
             team = membership.team
             try:
-                leader = Users.objects.get(pk=team.leader_id_id)
+                leader = Users.objects.get(pk=team.leader_id)
             except Users.DoesNotExist:
                 leader_name = "Unknown"  # 리더가 없는 경우 처리
             else:

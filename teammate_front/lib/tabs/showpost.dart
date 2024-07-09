@@ -24,7 +24,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   }
 
   Future<void> _fetchAndSetNickname() async {
-    final leaderId = widget.post['leader_id_id'];
+    final leaderId = widget.post['leader_id'];
     if (leaderId != null) {
       final userDetails = await _fetchUserDetails(leaderId);
       if (userDetails != null) {
@@ -129,7 +129,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       // }
       //print(message);
       var alarmData = {
-        'receiver_id': post['leader_id_id'],
+        'receiver_id': post['leader_id'],
         'type': alarmType,
         'message': 'nickname님으로부터 함께하기 요청을 받았습니다'
         // 'message': "땡땡님으로부터 요청이 들어왔습니다!",
@@ -191,7 +191,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Row(
               children: [
                 GestureDetector(
-                  onTap: () => _showUserDetailsDialog(context, widget.post['leader_id_id']),
+                  onTap: () => _showUserDetailsDialog(context, widget.post['leader_id']),
                   child: CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(widget.post['profile_picture_url'] ?? 'https://via.placeholder.com/150'), // URL로 대체 가능
@@ -221,7 +221,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             ),
             SizedBox(height: 10),
             Text('Course ID: ${widget.post['course_id'] ?? 'N/A'}'),
-            Text('Leader ID: ${widget.post['leader_id_id'] ?? 'N/A'}'),
+            Text('Leader ID: ${widget.post['leader_id'] ?? 'N/A'}'),
             Text('Content: ${widget.post['post_content'] ?? 'N/A'}'),
             Text('Capacity: ${widget.post['member_limit'] ?? 'N/A'}'),
             Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.post['due_date'] ?? DateTime.now().toString()))}'),
@@ -235,10 +235,10 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        // if (widget.post['leader_id_id'] > 0)
+        // if (widget.post['leader_id'] > 0)
         //   ElevatedButton(
         //     child: Text('삭제'),
-        //     onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id_id']),
+        //     onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id']),
         //   )
         // else
           ElevatedButton(

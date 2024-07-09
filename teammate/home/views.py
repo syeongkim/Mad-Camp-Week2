@@ -26,7 +26,6 @@ def kakao_callback(request):
         print("이미 존재하는 사용자입니다.")
     else:
         print("새로운 사용자입니다.")
-        Users.objects.create(user_id=id)
 
     user_info = {
         'id': id,
