@@ -108,6 +108,8 @@ def save_alarm(request):
         print(body)
         
         receiver_id = body.get('receiver_id')
+        sender_id = body.get('sender_id')
+        post_id = body.get('post_id')
         type = body.get('type')
         message = body.get('message')
         
@@ -132,7 +134,7 @@ def save_alarm(request):
 @csrf_exempt
 def select_alarm(request, receiver_id):
     if request.method == 'GET':
-        alarm_exists = Alarms.objects.filter(receiver_id=receiver_id).exists()
+        alarm_exists = Alarms.objects.filter(receiver_id=receiver_id)
         if alarm_exists:
             alarms = Alarms.objects.filter(receiver_id=receiver_id).order_by('-created_at').values()
             return JsonResponse(list(alarms), safe=False)
