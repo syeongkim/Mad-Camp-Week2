@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:teammate_front/config.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -15,12 +16,18 @@ class PostDetailsPage extends StatefulWidget {
 }
 
 class _PostDetailsPageState extends State<PostDetailsPage> {
+  int? userId;
   String? nickname;
 
   @override
   void initState() {
     super.initState();
     _fetchAndSetNickname();
+  }
+
+  Future<void> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userId = prefs.getInt('id');
   }
 
   Future<void> _fetchAndSetNickname() async {
@@ -131,6 +138,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       //print(message);
       var alarmData = {
         'receiver_id': post['leader_id'],
+        'sender_id': prefs.getInt('userId'),
+        'post_id': post['post_id'],
         'type': alarmType,
         'message': 'nickname님으로부터 함께하기 요청을 받았습니다'
         // 'message': "땡땡님으로부터 요청이 들어왔습니다!",
@@ -139,7 +148,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       };
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/alarm'),
+        Uri.parse('http://$apiurl:8000/alarm'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(alarmData),
       );
@@ -153,6 +162,30 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     } catch (e) {
       print('Error sending alarm: $e');
       return null;
+    }
+  }
+
+  Future<void> _saveRequest(int postId, int leaderId, String comment) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
+
+    var requestData = {
+      'post_id': postId,
+      'leader_id': leaderId,
+      'sender_id': userId,
+      'comment': comment,
+    };
+
+    final response = await http.post(
+      Uri.parse('http://$apiurl:8000/teamposts/request'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestData),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to save request: ${response.statusCode}');
     }
   }
 
@@ -238,11 +271,11 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       actions: <Widget>[
         TextButton(
           child: Text('닫기'),
-          onPressed: () {
+          onPressed: () async {
             Navigator.of(context).pop();
           },
         ),
-        if (widget.post['leader_id'] > 0)
+        if (widget.post['leader_id'] == _getUserId())
           ElevatedButton(
             child: Text('삭제'),
             onPressed: () => _showDeleteConfirmationDialog(
@@ -252,6 +285,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
           ElevatedButton(
             child: Text('요청'),
             onPressed: () {
+              _saveRequest(
+                  widget.post['post_id'], widget.post['leader_id'], '함께하기 요청');
               _sendAlarm('request', widget.post);
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -96,7 +96,7 @@ class AlarmDetailPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // TODO: 일단 챗지피티가 짜준대로 만들었는데 창이 너무 커요.. dialog로 바꿔야할듯 
     return Scaffold(
       appBar: AppBar(
         title: Text('알람 상세 정보'),
@@ -107,12 +107,12 @@ class AlarmDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              alarm['type'] ?? 'No Title',
+              alarm['message'] ?? 'No message',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Text(
-              alarm['message'] ?? 'No Content',
+              alarm['created_at'] ?? 'Unknown',
               style: TextStyle(fontSize: 18),
             ),
             // 필요한 경우 추가 정보 표시

@@ -99,6 +99,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Alarms, Users
+from teamposts.models import TeamPost
 
 @csrf_exempt
 def save_alarm(request):
@@ -111,12 +112,26 @@ def save_alarm(request):
         sender_id = body.get('sender_id')
         post_id = body.get('post_id')
         type = body.get('type')
-        message = body.get('message')
+        sender = Users.objects.get(user_id=sender_id)
+        sender_name = sender.name
+        post = TeamPost.objects.get(post_id=post_id)
+        course_id = post.course_id
+        course = CourseList.objects.get(course_code=course_id)
+        course_name = course.course_name
+        
+        if type == 'request':
+            message = f'{sender_name}님이 {course_name} 함께하기 요청을 보냈습니다.'
+        elif type == 'accept':
+            message = f'{sender_name}님이 {course_name} 함께하기 요청을 수락했습니다.'
+        elif type == 'reject':
+            message = f'{sender_name}님이 {course_name} 함께하기 요청을 거절했습니다.'
         
         try:
             receiver = Users.objects.get(user_id=receiver_id)
             created = Alarms.objects.create(
                 receiver_id=receiver_id,
+                sender_id=sender_id,
+                post_id=post_id,
                 type=type,
                 message=message,
             )

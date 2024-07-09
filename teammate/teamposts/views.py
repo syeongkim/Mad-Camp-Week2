@@ -138,12 +138,13 @@ def save_request(request):
     if (request.method == 'POST'):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
+        print(body)
         
         try:
             post_id = body.get('post_id')
             leader_id = body.get('leader_id')
-            member_id = body.get('member_id')
-            request_content = body.get('request_content')
+            member_id = body.get('sender_id')
+            request_content = body.get('comment')
            
             request = TeamRequest.objects.create(
                post_id=post_id,
@@ -151,8 +152,10 @@ def save_request(request):
                member_id=member_id,
                request_comment=request_content,
             )
+            print("sucess", request.request_id)
             return JsonResponse({'message': 'Request is successfully saved' + str(request.request_id)}, safe=False)
         except Exception as e:
+            print(e)
             return JsonResponse({'message': str(e)})
     else:
         return JsonResponse({'message': 'Invalid request method'})

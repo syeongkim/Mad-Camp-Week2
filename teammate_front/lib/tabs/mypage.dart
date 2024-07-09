@@ -22,7 +22,7 @@ class _MyPageState extends State<MyPage> {
     'created_at': ""
   };
 
-  List<dynamic> userReviews = [];
+  List<Map<String, dynamic>> userReviews = [];
 
   @override
   void initState() {
@@ -61,7 +61,7 @@ class _MyPageState extends State<MyPage> {
             Uri.parse('http://$apiurl:8000/reviews/$userId').replace();
         http.Response response = await http.get(uri);
         setState(() {
-          userReviews = json.decode(response.body) as List<dynamic>;
+          userReviews = json.decode(response.body) as List<Map<String, dynamic>>;
         });
       }
     } catch (e) {
