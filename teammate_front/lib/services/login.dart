@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:teammate_front/config.dart';
 import 'login_info.dart';
 import 'package:http/http.dart' as http;
 
@@ -39,7 +40,7 @@ class LoginScreen extends StatelessWidget {
       OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
       print('카카오 계정으로 로그인 성공: ${token.accessToken}');
       // 로그인 성공 시, 토큰을 사용하여 서버에 요청
-      final Uri uri = Uri.parse('http://10.0.2.2:8000/oauth/callback').replace(
+      final Uri uri = Uri.parse('http://$apiurl:8000/oauth/callback').replace(
         queryParameters: {
           'access_token': token.accessToken,
         },
@@ -59,15 +60,14 @@ class LoginScreen extends StatelessWidget {
       } else {
         print("User is not created");
         bool infoDone = await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => LoginInfo(),
+          MaterialPageRoute(
+            builder: (context) => LoginInfo(),
           ),
         );
         print("hi");
         if (infoDone == true) {
           onLogin();
-        }
-        else {
+        } else {
           _loginWithKakao(context);
         }
       }

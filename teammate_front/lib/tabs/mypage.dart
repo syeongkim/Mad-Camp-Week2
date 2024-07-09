@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'myedit.dart';
+import 'package:teammate_front/config.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _MyPageState extends State<MyPage> {
 
       if (userId != null) {
         final Uri uri =
-            Uri.parse('http://10.0.2.2:8000/user/update/$userId').replace();
+            Uri.parse('http://$apiurl:8000/user/update/$userId').replace();
         http.Response response = await http.get(uri);
         setState(() {
           // 사용자 정보를 가져와서 상태 변경

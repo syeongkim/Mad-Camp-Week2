@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:teammate_front/config.dart';
 
 class NewPostPage extends StatefulWidget {
   final String courseId;
@@ -29,7 +30,9 @@ class _NewPostPageState extends State<NewPostPage> {
       _showTimeError = _selectedTime == null;
     });
 
-    if (_formKey.currentState!.validate() && !_showDateError && !_showTimeError) {
+    if (_formKey.currentState!.validate() &&
+        !_showDateError &&
+        !_showTimeError) {
       _formKey.currentState!.save();
 
       DateTime finalDateTime = DateTime(
@@ -54,7 +57,7 @@ class _NewPostPageState extends State<NewPostPage> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/teamposts/teamposts'),
+          Uri.parse('http://$apiurl:8000/teamposts/teamposts'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(postData),
         );
@@ -125,7 +128,9 @@ class _NewPostPageState extends State<NewPostPage> {
                   }
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.tryParse(value)! < 2) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      int.tryParse(value)! < 2) {
                     return '2명 이상의 정원을 입력해주세요';
                   }
                   return null;

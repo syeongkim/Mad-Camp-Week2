@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:teammate_front/config.dart';
 
 class LoginInfo extends StatefulWidget {
   // final VoidCallback onLogin;
@@ -23,10 +24,9 @@ class _LoginInfoState extends State<LoginInfo> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       //print('Nickname: $_nickname, Name: $_name, StudentID: $_studentID, Email: $_email');
-      
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _userId = prefs.getInt('userId');
-
 
       //회원가입 정보를 DB에 저장
       try {
@@ -42,7 +42,7 @@ class _LoginInfoState extends State<LoginInfo> {
           'user_student_id': _studentID,
         };
 
-        final postregisterUri = Uri.parse('http://10.0.2.2:8000/user/register');
+        final postregisterUri = Uri.parse('http://$apiurl:8000/user/register');
         http.Response postResponse = await http.post(
           postregisterUri,
           headers: {

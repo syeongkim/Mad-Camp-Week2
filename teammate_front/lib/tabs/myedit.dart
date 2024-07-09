@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:teammate_front/config.dart';
+
 class MyEdit extends StatefulWidget {
   final Map<String, dynamic> userInfo;
 
@@ -40,7 +42,7 @@ class _MyEditPageState extends State<MyEdit> {
 
       if (userId != null) {
         final Uri uri =
-            Uri.parse('http://10.0.2.2:8000/user/edit/$userId').replace();
+            Uri.parse('http:/$apiurl:8000/user/edit/$userId').replace();
         final response = await http.put(
           uri,
           headers: {'Content-Type': 'application/json'},

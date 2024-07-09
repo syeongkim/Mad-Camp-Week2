@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'newpost.dart';  // newpost.dart 파일 가져오기
+import 'newpost.dart'; // newpost.dart 파일 가져오기
 import 'showpost.dart';
+import 'package:teammate_front/config.dart';
 
 class Board extends StatelessWidget {
   const Board({Key? key}) : super(key: key);
@@ -67,7 +68,7 @@ class SubjectListState extends State<SubjectList> {
   Future<void> loadposts() async {
     try {
       final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/teamposts/teamposts'));
+          await http.get(Uri.parse('http://$apiurl:8000/teamposts/teamposts'));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -160,23 +161,23 @@ class SubjectListState extends State<SubjectList> {
                 itemBuilder: (context, index) {
                   var post = allPosts[index];
                   return ListTile(
-
-                    title: Text(post['post_title'] ?? 'No Title'),  // null인 경우 기본값 사용
-                    subtitle: Text('${post['course_id'] ?? 'N/A'} Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                    title: Text(
+                        post['post_title'] ?? 'No Title'), // null인 경우 기본값 사용
+                    subtitle: Text(
+                        '${post['course_id'] ?? 'N/A'} Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
 
                     isThreeLine: true,
                     onTap: () async {
-                      bool isAvailable = await showPostDetailsDialog(context, post, allPosts);
-                      if (isAvailable)
-                        loadposts();
-                        post = allPosts[index];
+                      bool isAvailable =
+                          await showPostDetailsDialog(context, post, allPosts);
+                      if (isAvailable) loadposts();
+                      post = allPosts[index];
                     },
                   );
-                    
-                    //  setState(() {
-                    //     subjectDetails = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-                    //   });
-                  
+
+                  //  setState(() {
+                  //     subjectDetails = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+                  //   });
                 },
               ),
             ),
@@ -185,7 +186,6 @@ class SubjectListState extends State<SubjectList> {
       ),
     );
   }
-
 }
 
 class SubjectBoard extends StatefulWidget {
@@ -216,7 +216,7 @@ class _SubjectBoardState extends State<SubjectBoard> {
     try {
       print(widget.subject);
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/teamposts/courses/${widget.subject}'),
+        Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.subject}'),
       );
 
       if (response.statusCode == 200) {
@@ -249,7 +249,7 @@ class _SubjectBoardState extends State<SubjectBoard> {
       };
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/teamposts/upload'),
+        Uri.parse('http://$apiurl:8000/teamposts/upload'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -280,8 +280,8 @@ class _SubjectBoardState extends State<SubjectBoard> {
 
     //여기에서 방금 저장한 포스트까지 반영해서 불러오기
     try {
-      final response = await http.get(Uri.parse(
-          'http://10.0.2.2:8000/teamposts/courses/${widget.subject}'));
+      final response = await http.get(
+          Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.subject}'));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -323,10 +323,10 @@ class _SubjectBoardState extends State<SubjectBoard> {
                         'Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
                     isThreeLine: true,
                     onTap: () async {
-                      bool isAvailable = await showPostDetailsDialog(context, post, subjectDetails);
-                      if (isAvailable)
-                        loadSubjectDetails();
-                        post = subjectDetails[index];
+                      bool isAvailable = await showPostDetailsDialog(
+                          context, post, subjectDetails);
+                      if (isAvailable) loadSubjectDetails();
+                      post = subjectDetails[index];
                     },
                     // onTap: () => _showPostDetailsDialog(context, post),
                   );

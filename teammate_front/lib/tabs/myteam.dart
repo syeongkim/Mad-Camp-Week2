@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:teammate_front/config.dart';
 import 'profile.dart';
 
 class MyTeam extends StatefulWidget {
@@ -29,7 +30,7 @@ class _MyTeamPageState extends State<MyTeam> {
     print(userId);
 
     final response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/teamposts/myteample/$userId'));
+        .get(Uri.parse('http://$apiurl:8000/teamposts/myteample/$userId'));
     print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -45,7 +46,7 @@ class _MyTeamPageState extends State<MyTeam> {
     var team_id = teamId.toString();
     print(team_id);
     final response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/teamposts/myteammember/$team_id'));
+        .get(Uri.parse('http://$apiurl:8000/teamposts/myteammember/$team_id'));
     print(response.body);
     if (response.statusCode == 200) {
       print('여기에러1');

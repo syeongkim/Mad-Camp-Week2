@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:teammate_front/config.dart';
+
 class ProfilePage extends StatefulWidget {
   final int user_id;
 
@@ -25,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
     user_id = user_id.toString();
     try {
       final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/user/view/$user_id'));
+          await http.get(Uri.parse('http://$apiurl:8000/user/view/$user_id'));
 
       if (response.statusCode == 200) {
         setState(() {
