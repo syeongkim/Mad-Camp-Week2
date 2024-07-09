@@ -28,6 +28,10 @@ class _LoginInfoState extends State<LoginInfo> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _userId = prefs.getInt('userId');
 
+      SharedPreferences prefs2 = await SharedPreferences.getInstance();
+      await prefs2.setString('nickname', _nickname);
+
+
       //회원가입 정보를 DB에 저장
       try {
         // var userId = _userId;

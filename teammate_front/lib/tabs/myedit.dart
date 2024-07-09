@@ -40,6 +40,9 @@ class _MyEditPageState extends State<MyEdit> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
 
+      SharedPreferences prefs2 = await SharedPreferences.getInstance();
+      await prefs2.setString('nickname', _nicknameController.text);
+
       if (userId != null) {
         final Uri uri =
             Uri.parse('http:/$apiurl:8000/user/edit/$userId').replace();

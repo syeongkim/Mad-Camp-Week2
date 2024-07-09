@@ -51,7 +51,6 @@ def teamposts_course(request, course_id):
     else:
         return JsonResponse({'message': 'Invalid request method'})
         
-    
 
 @csrf_exempt
 def teamposts_post(request, post_id):

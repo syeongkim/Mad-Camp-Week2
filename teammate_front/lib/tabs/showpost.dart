@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:teammate_front/config.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -38,7 +38,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   Future<void> _deletePost(int postId, int leaderId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://$apiurl:8000/teamposts/post/$postId/$leaderId'),
+        Uri.parse('http://10.0.2.2:8000/teamposts/post/$postId/$leaderId'),
       );
 
       if (response.statusCode == 200) {
@@ -46,7 +46,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('삭제되었습니다.'),
         ));
-        Navigator.of(context).pop(true); // 다이얼로그 닫기 및 값 반환
+        Navigator.of(context).pop(true);  // 다이얼로그 닫기 및 값 반환
       } else {
         print('Failed to delete post: ${response.statusCode}');
         Navigator.of(context).pop(false); // 삭제 실패 시 값 반환
@@ -60,7 +60,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   Future<Map<String, dynamic>?> _fetchUserDetails(int leaderId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://$apiurl:8000/user/update/$leaderId'),
+        Uri.parse('http://10.0.2.2:8000/user/update/$leaderId'),
       );
 
       if (response.statusCode == 200) {
@@ -113,6 +113,47 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       },
     );
   }
+  Future<void> _sendAlarm(String alarmType, Map<String, dynamic> post) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? nickname = prefs.getString('nickname');
+
+    try {
+      //String message = 'nickname님으로부터 함께하기 요청을 받았습니다';
+      // switch(alarmType) {
+      //   case 'request':
+      //     message = 'nickname님으로부터 함께하기 요청을 받았습니다';
+      //   case 'answer':
+      //     message = '';
+      //   case 'reminder':
+      //     message = '';
+      // }
+      //print(message);
+      var alarmData = {
+        'receiver_id': post['leader_id_id'],
+        'type': alarmType,
+        'message': 'nickname님으로부터 함께하기 요청을 받았습니다'
+        // 'message': "땡땡님으로부터 요청이 들어왔습니다!",
+        // 'read': post[],
+        // 'created_at': post[]
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/alarm'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(alarmData),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Failed to send alarm: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error sending alarm: $e');
+      return null;
+    }
+  }
 
   void _showDeleteConfirmationDialog(int postId, int leaderId) {
     showDialog(
@@ -150,13 +191,10 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Row(
               children: [
                 GestureDetector(
-                  onTap: () => _showUserDetailsDialog(
-                      context, widget.post['leader_id_id']),
+                  onTap: () => _showUserDetailsDialog(context, widget.post['leader_id_id']),
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(
-                        widget.post['profile_picture_url'] ??
-                            'https://via.placeholder.com/150'), // URL로 대체 가능
+                    backgroundImage: NetworkImage(widget.post['profile_picture_url'] ?? 'https://via.placeholder.com/150'), // URL로 대체 가능
                     backgroundColor: Colors.grey, // 이미지가 없는 경우 배경색 설정
                   ),
                 ),
@@ -169,9 +207,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      DateFormat('yyyy-MM-dd').format(DateTime.parse(
-                          widget.post['post_date'] ??
-                              DateTime.now().toString())),
+                      DateFormat('yyyy-MM-dd').format(DateTime.parse(widget.post['post_date'] ?? DateTime.now().toString())),
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -188,8 +224,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Text('Leader ID: ${widget.post['leader_id_id'] ?? 'N/A'}'),
             Text('Content: ${widget.post['post_content'] ?? 'N/A'}'),
             Text('Capacity: ${widget.post['member_limit'] ?? 'N/A'}'),
-            Text(
-                'Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.post['due_date'] ?? DateTime.now().toString()))}'),
+            Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.post['due_date'] ?? DateTime.now().toString()))}'),
           ],
         ),
       ),
@@ -200,16 +235,16 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        if (widget.post['leader_id_id'] > 0)
-          ElevatedButton(
-            child: Text('삭제'),
-            onPressed: () => _showDeleteConfirmationDialog(
-                widget.post['post_id'], widget.post['leader_id_id']),
-          )
-        else
+        // if (widget.post['leader_id_id'] > 0)
+        //   ElevatedButton(
+        //     child: Text('삭제'),
+        //     onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id_id']),
+        //   )
+        // else
           ElevatedButton(
             child: Text('요청'),
             onPressed: () {
+              _sendAlarm('request', widget.post);
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text('요청되었습니다!'),
@@ -221,13 +256,11 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   }
 }
 
-Future<bool> showPostDetailsDialog(BuildContext context,
-    Map<String, dynamic> post, List<Map<String, dynamic>> allPosts) async {
+Future<bool> showPostDetailsDialog(BuildContext context, Map<String, dynamic> post, List<Map<String, dynamic>> allPosts) async {
   return await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return PostDetailsPage(post: post, allPosts: allPosts);
-        },
-      ) ??
-      false;
+    context: context,
+    builder: (BuildContext context) {
+      return PostDetailsPage(post: post, allPosts: allPosts);
+    },
+  ) ?? false;
 }
