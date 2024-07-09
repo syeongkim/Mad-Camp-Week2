@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from .models import *
 from time import timezone
+from home.models import Users
 
 @csrf_exempt
 def teamposts(request):
@@ -76,6 +77,8 @@ def teamposts_post(request, post_id):
 
         if post_title is not None:
             post.post_title = post_title
+        if course_id is not None:
+            post.course_id = course_id
         if leader_id is not None:
             post.leader_id = leader_id
         if post_content is not None:
@@ -163,30 +166,29 @@ def myteample(request, user_id):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         # 사용자가 참여하고 있는 팀의 목록을 가져옵니다.
-        memberships = TeamMembership.objects.filter(member_id=user_id).values()
+        teams = TeamMembership.objects.filter(member_id=user_id).values()
 
         # 팀 정보를 가져옵니다.
-        teams = []
-        for membership in memberships:
-            team = membership.team
-            try:
-                leader = Users.objects.get(pk=team.leader_id)
-            except Users.DoesNotExist:
-                leader_name = "Unknown"  # 리더가 없는 경우 처리
-            else:
-                leader_name = leader.name  # Users 모델에 username 필드가 있다고 가정합니다.
+        teamdetails = []
+        for team in teams:
+            team_id = team['team_id']
+            teaminfo = Team.objects.get(team_id=team_id)
+            course_id = teaminfo.course_id
+            team_leader = teaminfo.leader_id
+            leader_info = Users.objects.get(user_id=team_leader)
+            leader_name = leader_info.name
             
-            teams.append({
-                "team_id": team.team_id,
-                "course_id": team.course_id,
+            teamdetails.append({
+                "team_id": team_id,
+                "course_id": course_id,
                 "leader_name": leader_name,
-                "is_full": team.is_full,
-                "is_finished": team.is_finished
+                "is_full": teaminfo.is_full,
+                "is_finished": teaminfo.is_finished
             })
-            print(teams)
+            print(teamdetails)
 
         # JSON 형식으로 응답합니다.
-        return JsonResponse(teams, safe=False)
+        return JsonResponse(teamdetails, safe=False)
 
 def myteammember(requset, team_id):
     try:
@@ -198,11 +200,15 @@ def myteammember(requset, team_id):
         # 팀 멤버십을 통해 유저 정보를 가져옵니다.
         members = []
         for membership in memberships:
-            user = membership.member  # TeamMembership 모델에 member 필드가 있다고 가정합니다.
+            #user = membership.member  # TeamMembership 모델에 member 필드가 있다고 가정합니다.
+            user_id = membership.member_id
+            user = Users.objects.get(pk=user_id)
+            name = user.name  # Users 모델에 username 필드가 있다고 가정합니다.
+            student_id = user.student_id  # Users 모델에 student_id 필드가 있다고 가정합니다.
             members.append({
-                'user_id': user.user_id,
-                'name': user.name,
-                'student_id': user.student_id
+                'user_id': membership.member_id,
+                'name': name,
+                'student_id': student_id
             })
         
         # JSON 형식으로 응답합니다.
@@ -213,6 +219,25 @@ def myteammember(requset, team_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+@csrf_exempt
+def teamregister(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        
+        team_id = body.get('team_id')
+        member_id = body.get('member_id')
+        
+        try:
+            TeamMembership.objects.create(
+                team_id=team_id,
+                member_id=member_id,
+            )
+            return JsonResponse({'message': 'Successfully registered to the team'})
+        except Exception as e:
+            return JsonResponse({'message': 'Failed to register to the team' + str(e)})
+        
+        
 @csrf_exempt
 def team(request, team_id):
     if request.method == 'GET':
@@ -230,13 +255,12 @@ def team(request, team_id):
             if 'is_finished' in data:
                 # 'is_finished' 필드를 업데이트합니다.
                 team.is_finished = data['is_finished']
-                team.save()
+            if 'is_full' in data:
+                team.is_full = data['is_full']
+            team.save()
                 
                 # 성공 응답을 반환합니다.
-                return JsonResponse({'status': 'success', 'message': 'Team finished successfully'})
-            else:
-                # 잘못된 데이터에 대한 오류 응답을 반환합니다.
-                return JsonResponse({'status': 'error', 'message': 'Invalid data'}, status=400)
+            return JsonResponse({'status': 'success', 'message': 'Team finished successfully'})
         except Team.DoesNotExist:
             # team_id에 해당하는 팀이 없는 경우의 오류 응답을 반환합니다.
             return JsonResponse({'status': 'error', 'message': 'Team not found'}, status=404)

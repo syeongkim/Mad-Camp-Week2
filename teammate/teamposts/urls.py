@@ -10,6 +10,7 @@ urlpatterns = [
     path('request/<int:request_id>', teamrequests, name='request_detail'),
     path('myteample/<int:user_id>', myteample, name='myteample'),
     path('myteammember/<int:team_id>', myteammember, name='myteammember'),
+    path('team/register', teamregister, name='teamregister'),
     path('team/<int:team_id>', team, name='team_detail'),
     path('team', newteam, name='new_team'),
 ]
