@@ -4,7 +4,7 @@ from django.shortcuts import render
 import requests
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseRedirect
-from .models import MyUser, Users, Reviews
+from .models import MyUser, Users, Reviews, Alarms
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 
@@ -63,5 +63,38 @@ def select_reviews(request, reviewee_id):
             return JsonResponse(list(reviews))
         else:
             return JsonResponse({'message': 'No review found'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
+    
+def save_alarm(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        
+        receiver_id = body.get('receiver_id')
+        type = body.get('type')
+        message = body.get('message')
+        
+        created = Alarms.objects.create(
+            receiver_id=receiver_id,
+            type=type,
+            message=message,
+        )
+        
+        if created:
+            return JsonResponse({'message': 'new alarm is successfully saved'})
+        else:
+            return JsonResponse({'message': 'failed to save new alarm'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
+
+def select_alarm(request, receiver_id):
+    if request.method == 'GET':
+        alarm_exists = Alarms.objects.filter(receiver_id=receiver_id)
+        if alarm_exists:
+            alarms = Alarms.objects.filter(receiver_id=receiver_id).values()
+            return JsonResponse(list(alarms))
+        else:
+            return JsonResponse({'message': 'No alarm found'})
     else:
         return JsonResponse({'message': 'Invalid request method'})

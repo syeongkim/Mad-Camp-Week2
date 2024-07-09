@@ -48,15 +48,13 @@ class Reviews(models.Model):
     def __str__(self):
         return str(self.review_id)
     
-# class TeamPost(models.Model):
-#     post_id = models.AutoField(primary_key=True)
-#     post_title = models.CharField(max_length=100)
-#     course_id = models.CharField(max_length=10)
-#     leader_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='leader_posts')
-#     post_content = models.TextField(null=True, blank=True)
-#     member_limit = models.IntegerField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     due_date = models.DateTimeField()
-
-#     def __str__(self):
-#         return str(self.post_id)
+class Alarms(models.Model):
+    alarm_id = models.AutoField(primary_key=True, unique=True)
+    receiver_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='users')
+    type = models.CharField(max_length=20)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.alarm_id)
