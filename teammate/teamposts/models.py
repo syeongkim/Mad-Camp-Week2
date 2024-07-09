@@ -31,7 +31,7 @@ class TeamMembership(models.Model):
     is_finished = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Team {self.team.team_id} - Member {self.member.user_id}'
+        return f'Team str({self.team.team_id}) - Member str({self.member.user_id})'
 
 class TeamRequest(models.Model):
     request_id = models.AutoField(primary_key=True)
