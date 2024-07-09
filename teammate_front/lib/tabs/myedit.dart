@@ -40,19 +40,20 @@ class _MyEditPageState extends State<MyEdit> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
 
+
       SharedPreferences prefs2 = await SharedPreferences.getInstance();
       await prefs2.setString('nickname', _nicknameController.text);
 
       if (userId != null) {
         final Uri uri =
-            Uri.parse('http:/$apiurl:8000/user/edit/$userId').replace();
+            Uri.parse('http://$apiurl:8000/user/edit/$userId').replace();
         final response = await http.put(
           uri,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'name': _nameController.text,
             'nickname': _nicknameController.text,
-            'student_id': int.parse(_studentIdController.text),
+            'student_id': _studentIdController.text,
             'user_comment': _commentController.text,
             'user_capacity': _capacityController.text,
           }),
