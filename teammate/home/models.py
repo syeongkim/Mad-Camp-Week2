@@ -57,6 +57,8 @@ class Reviews(models.Model):
 
 class Alarms(models.Model):
     alarm_id = models.AutoField(primary_key=True, unique=True)
+    post_id = models.BigIntegerField()
+    sender_id = models.BigIntegerField()
     receiver_id = models.BigIntegerField()
     type = models.CharField(max_length=20)
     message = models.TextField()
