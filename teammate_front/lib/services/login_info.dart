@@ -94,7 +94,7 @@ class _LoginInfoState extends State<LoginInfo> {
                   return null;
                 },
                 onSaved: (value) {
-                  _name = value!;
+                  _nickname = value!;
                 },
               ),
               TextFormField(
@@ -106,7 +106,7 @@ class _LoginInfoState extends State<LoginInfo> {
                   return null;
                 },
                 onSaved: (value) {
-                  _nickname = value!;
+                  _name = value!;
                 },
               ),
               TextFormField(

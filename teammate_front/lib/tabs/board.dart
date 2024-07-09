@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'newpost.dart';  // newpost.dart 파일 가져오기
+import 'showpost.dart';
 
 class Board extends StatelessWidget {
   const Board({Key? key}) : super(key: key);
@@ -150,52 +151,26 @@ class SubjectListState extends State<SubjectList> {
                   var post = allPosts[index];
                   return ListTile(
                     title: Text(post['post_title'] ?? 'No Title'),  // null인 경우 기본값 사용
-                    subtitle: Text('Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
+                    subtitle: Text('${post['course_id'] ?? 'N/A'} Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
                     isThreeLine: true,
-                    onTap: () => _showPostDetailsDialog(context, post),
+                    onTap: () async {
+                      bool isAvailable = await showPostDetailsDialog(context, post, allPosts);
+                      if (isAvailable)
+                        loadposts();
+                        post = allPosts[index];
+                    },
                   );
+                    
+                    //  setState(() {
+                    //     subjectDetails = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+                    //   });
+                  
                 },
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  void _showPostDetailsDialog(BuildContext context, Map<String, dynamic> post) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(post['post_title'] ?? 'No Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Course ID: ${post['course_id'] ?? 'N/A'}'),
-                Text('Leader ID: ${post['leader_id'] ?? 'N/A'}'),
-                Text('Content: ${post['post_content'] ?? 'N/A'}'),
-                Text('Capacity: ${post['member_limit'] ?? 'N/A'}'),
-                Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('닫기'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: Text('요청'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
@@ -328,7 +303,13 @@ class _SubjectBoardState extends State<SubjectBoard> {
                     title: Text(post['post_title'] ?? 'No Title'),  // null인 경우 기본값 사용
                     subtitle: Text('Capacity: ${post['member_limit'] ?? 'N/A'} Due: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
                     isThreeLine: true,
-                    onTap: () => _showPostDetailsDialog(context, post),
+                    onTap: () async {
+                      bool isAvailable = await showPostDetailsDialog(context, post, subjectDetails);
+                      if (isAvailable)
+                        loadSubjectDetails();
+                        post = subjectDetails[index];
+                    },
+                    // onTap: () => _showPostDetailsDialog(context, post),
                   );
                 },
               ),
@@ -342,41 +323,4 @@ class _SubjectBoardState extends State<SubjectBoard> {
       ),
     );
   }
-
-  void _showPostDetailsDialog(BuildContext context, Map<String, dynamic> post) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(post['post_title'] ?? 'No Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Course ID: ${post['course_id'] ?? 'N/A'}'),
-                Text('Leader ID: ${post['leader_id'] ?? 'N/A'}'),
-                Text('Content: ${post['post_content'] ?? 'N/A'}'),
-                Text('Capacity: ${post['member_limit'] ?? 'N/A'}'),
-                Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(post['due_date'] ?? DateTime.now().toString()))}'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('닫기'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: Text('요청'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
 }

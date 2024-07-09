@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class NewPostPage extends StatefulWidget {
@@ -20,9 +20,16 @@ class _NewPostPageState extends State<NewPostPage> {
   int? _capacity;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  bool _showDateError = false;
+  bool _showTimeError = false;
 
   Future<void> _postSubmit() async {
-    if (_formKey.currentState!.validate()) {
+    setState(() {
+      _showDateError = _selectedDate == null;
+      _showTimeError = _selectedTime == null;
+    });
+
+    if (_formKey.currentState!.validate() && !_showDateError && !_showTimeError) {
       _formKey.currentState!.save();
 
       DateTime finalDateTime = DateTime(
@@ -118,8 +125,8 @@ class _NewPostPageState extends State<NewPostPage> {
                   }
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '정원을 입력해주세요';
+                  if (value == null || value.isEmpty || int.tryParse(value)! < 2) {
+                    return '2명 이상의 정원을 입력해주세요';
                   }
                   return null;
                 },
@@ -128,11 +135,19 @@ class _NewPostPageState extends State<NewPostPage> {
                 title: Text(
                   _selectedDate == null
                       ? 'Select Date'
-                      : 'Selected Date: ${_selectedDate!.toLocal()}'.split(' ')[0],
+                      : 'Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}',
                 ),
                 trailing: Icon(Icons.calendar_today),
                 onTap: _pickDate,
               ),
+              if (_showDateError)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    '날짜를 선택해주세요',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               ListTile(
                 title: Text(
                   _selectedTime == null
@@ -142,6 +157,14 @@ class _NewPostPageState extends State<NewPostPage> {
                 trailing: Icon(Icons.access_time),
                 onTap: _pickTime,
               ),
+              if (_showTimeError)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    '시간을 선택해주세요',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _postSubmit,
@@ -161,10 +184,12 @@ class _NewPostPageState extends State<NewPostPage> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (pickedDate != null && pickedDate != _selectedDate)
+    if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
+        _showDateError = false; // 날짜 선택 시 경고 메시지 숨기기
       });
+    }
   }
 
   Future<void> _pickTime() async {
@@ -172,9 +197,11 @@ class _NewPostPageState extends State<NewPostPage> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (pickedTime != null && pickedTime != _selectedTime)
+    if (pickedTime != null && pickedTime != _selectedTime) {
       setState(() {
         _selectedTime = pickedTime;
+        _showTimeError = false; // 시간 선택 시 경고 메시지 숨기기
       });
+    }
   }
 }
