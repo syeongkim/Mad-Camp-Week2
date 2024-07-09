@@ -37,7 +37,6 @@ def update(request, user_id):
     
     user_info = {
         'user_id': user.user_id,
-        'profile_image': user.profile_image,
         'name': user.name,
         'nickname': user.nickname,
         'student_id': user.student_id,
