@@ -47,8 +47,8 @@ class Users(models.Model):
     
 class Reviews(models.Model):
     review_id = models.AutoField(primary_key=True, unique=True)
-    reviewer_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='reviewers')
-    reviewee_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='reviewees')
+    reviewer_id = models.BigIntegerField()
+    reviewee_id = models.BigIntegerField()
     score = models.FloatField()
     content = models.TextField(null=True, blank=True)
     

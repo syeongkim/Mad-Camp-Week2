@@ -46,11 +46,14 @@ def upload_review(request):
     score = body.get('score')
     comment = body.get('comment')
     
+    #reviewer_id = Users.objects.get(user_id=reviewer_id)
+    #reviewee_id = Users.objects.get(user_id=reviewee_id)
+        
     created = Reviews.objects.create(
         reviewer_id=reviewer_id,
         reviewee_id=reviewee_id,
         score=score,
-        comment=comment,
+        content=comment,
     )
     
     if created:
