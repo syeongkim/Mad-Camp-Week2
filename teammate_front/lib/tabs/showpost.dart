@@ -46,7 +46,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('삭제되었습니다.'),
         ));
-        Navigator.of(context).pop(true);  // 다이얼로그 닫기 및 값 반환
+        Navigator.of(context).pop(true); // 다이얼로그 닫기 및 값 반환
       } else {
         print('Failed to delete post: ${response.statusCode}');
         Navigator.of(context).pop(false); // 삭제 실패 시 값 반환
@@ -113,6 +113,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       },
     );
   }
+
   Future<void> _sendAlarm(String alarmType, Map<String, dynamic> post) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? nickname = prefs.getString('nickname');
@@ -191,10 +192,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Row(
               children: [
                 GestureDetector(
-                  onTap: () => _showUserDetailsDialog(context, widget.post['leader_id']),
+                  onTap: () =>
+                      _showUserDetailsDialog(context, widget.post['leader_id']),
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(widget.post['profile_picture_url'] ?? 'https://via.placeholder.com/150'), // URL로 대체 가능
+                    backgroundImage: NetworkImage(
+                        widget.post['profile_picture_url'] ??
+                            'https://via.placeholder.com/150'), // URL로 대체 가능
                     backgroundColor: Colors.grey, // 이미지가 없는 경우 배경색 설정
                   ),
                 ),
@@ -207,7 +211,9 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      DateFormat('yyyy-MM-dd').format(DateTime.parse(widget.post['post_date'] ?? DateTime.now().toString())),
+                      DateFormat('yyyy-MM-dd').format(DateTime.parse(
+                          widget.post['post_date'] ??
+                              DateTime.now().toString())),
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -224,7 +230,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Text('Leader ID: ${widget.post['leader_id'] ?? 'N/A'}'),
             Text('Content: ${widget.post['post_content'] ?? 'N/A'}'),
             Text('Capacity: ${widget.post['member_limit'] ?? 'N/A'}'),
-            Text('Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.post['due_date'] ?? DateTime.now().toString()))}'),
+            Text(
+                'Due Date: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(widget.post['due_date'] ?? DateTime.now().toString()))}'),
           ],
         ),
       ),
@@ -235,12 +242,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        // if (widget.post['leader_id'] > 0)
-        //   ElevatedButton(
-        //     child: Text('삭제'),
-        //     onPressed: () => _showDeleteConfirmationDialog(widget.post['post_id'], widget.post['leader_id']),
-        //   )
-        // else
+        if (widget.post['leader_id'] > 0)
+          ElevatedButton(
+            child: Text('삭제'),
+            onPressed: () => _showDeleteConfirmationDialog(
+                widget.post['post_id'], widget.post['leader_id']),
+          )
+        else
           ElevatedButton(
             child: Text('요청'),
             onPressed: () {
@@ -256,11 +264,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   }
 }
 
-Future<bool> showPostDetailsDialog(BuildContext context, Map<String, dynamic> post, List<Map<String, dynamic>> allPosts) async {
+Future<bool> showPostDetailsDialog(BuildContext context,
+    Map<String, dynamic> post, List<Map<String, dynamic>> allPosts) async {
   return await showDialog<bool>(
-    context: context,
-    builder: (BuildContext context) {
-      return PostDetailsPage(post: post, allPosts: allPosts);
-    },
-  ) ?? false;
+        context: context,
+        builder: (BuildContext context) {
+          return PostDetailsPage(post: post, allPosts: allPosts);
+        },
+      ) ??
+      false;
 }
