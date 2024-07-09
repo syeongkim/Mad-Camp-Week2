@@ -1,8 +1,9 @@
 import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from home.models import Users
+from home.models import Users, UserProfiles
 from django.views.decorators.csrf import csrf_exempt
+from home.forms import ProfileImageForm
 
 # Create your views here.
 @csrf_exempt
@@ -27,7 +28,7 @@ def register(request):
     else:
         return JsonResponse({'message': 'failed to create new user'})
     
-
+@csrf_exempt
 def update(request, user_id):
     if user_id is None:
         return JsonResponse({'error': 'user_id parameter is required'}, status=400)
@@ -36,6 +37,7 @@ def update(request, user_id):
     
     user_info = {
         'user_id': user.user_id,
+        'profile_image': user.profile_image,
         'name': user.name,
         'nickname': user.nickname,
         'student_id': user.student_id,
@@ -93,3 +95,28 @@ def view(request, user_id):
         return JsonResponse({"error": str(e)}, status=500)
   
 
+@csrf_exempt
+def user_profile(request, user_id):
+    if request.method == 'GET':
+        user_profile = UserProfiles.objects.filter(user_id=user_id).values()
+        if user_profile:
+            return JsonResponse(list(user_profile), safe=False)
+    if request.method in ['POST', 'PUT']:
+        user = get_object_or_404(Users, user_id=user_id)
+
+        # Check if 'profile_image' is in request.FILES
+        if 'profile_image' not in request.FILES:
+            return JsonResponse({'message': 'No profile image provided.'})
+
+        profile_image = request.FILES['profile_image']
+        form = ProfileImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile, created = UserProfiles.objects.update_or_create(
+                user_id=user,
+                defaults={'profile_image': profile_image}
+            )
+            return JsonResponse({'message': 'Profile image updated successfully.'})
+        else:
+            return JsonResponse({'message': 'Form is not valid.'})
+    else:
+        return JsonResponse({'message': 'Invalid request method.'})

@@ -23,8 +23,6 @@ class MyUser(AbstractBaseUser):
     def __str__(self):
         return str(self.kakao_id)
     
-
-    
 class Users(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=20, default='unknown')
@@ -38,6 +36,13 @@ class Users(models.Model):
     def __str__(self):
         return str(self.user_id)
     
+class UserProfiles(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='profiles')
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    
+    def __str__(self):
+        return str(self.user_id)
+    
 class Reviews(models.Model):
     review_id = models.AutoField(primary_key=True, unique=True)
     reviewer_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='reviewers')
@@ -48,15 +53,20 @@ class Reviews(models.Model):
     def __str__(self):
         return str(self.review_id)
     
-# class TeamPost(models.Model):
-#     post_id = models.AutoField(primary_key=True)
-#     post_title = models.CharField(max_length=100)
-#     course_id = models.CharField(max_length=10)
-#     leader_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='leader_posts')
-#     post_content = models.TextField(null=True, blank=True)
-#     member_limit = models.IntegerField()
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     due_date = models.DateTimeField()
-
-#     def __str__(self):
-#         return str(self.post_id)
+class Alarms(models.Model):
+    alarm_id = models.AutoField(primary_key=True, unique=True)
+    receiver_id = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='users')
+    type = models.CharField(max_length=20)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.alarm_id)
+    
+class CourseList(models.Model):
+    course_code = models.CharField(max_length=20, primary_key=True, unique=True)
+    course_name = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return str(self.course_id)

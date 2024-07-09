@@ -38,7 +38,7 @@ def teamposts(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, safe=False)
     
-    
+@csrf_exempt
 def teamposts_course(request, course_id):
     if request.method == 'GET':
         post_exists = TeamPost.objects.filter(course_id=course_id)
@@ -51,8 +51,8 @@ def teamposts_course(request, course_id):
     else:
         return JsonResponse({'message': 'Invalid request method'})
         
-    
 
+@csrf_exempt
 def teamposts_post(request, post_id):
     if request.method == 'GET':
         try:
@@ -72,7 +72,7 @@ def teamposts_post(request, post_id):
         member_limit = body.get('member_limit')
         due_date = body.get('due_date')
         
-        post = get_object_or_404(TeamPost, course_id=course_id)
+        post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
 
         if post_title is not None:
             post.post_title = post_title
@@ -89,7 +89,14 @@ def teamposts_post(request, post_id):
         return JsonResponse({'message': 'Post updated successfully'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+@csrf_exempt
+def teampostdelete(request, post_id, user_id):
+    post = get_object_or_404(TeamPost, post_id=post_id, leader_id=user_id)
+    post.delete()
+    return JsonResponse({'message': 'Post deleted successfully'})
+
+@csrf_exempt
 def teamrequests(request, request_id):
     if (request.method == 'GET'):
         try:
@@ -181,3 +188,50 @@ def myteammember(requset, team_id):
         return JsonResponse({'error': 'Team not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+def team(request, team_id):
+    if request.method == 'GET':
+        team = Team.objects.get(team_id=team_id)
+        return JsonResponse(model_to_dict(team))
+    elif request.method == 'PUT':
+        try:
+            team = get_object_or_404(Team, team_id=team_id)
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            
+            is_full = body.get('is_full')
+            is_finished = body.get('is_finished')
+            
+            if is_full is not None:
+                team.is_full = is_full
+            if is_finished is not None:
+                team.is_finished = is_finished
+            
+            team.save()
+            return JsonResponse({'message': 'Team updated successfully'})
+        except Exception as e:
+            return JsonResponse({'message': 'Failed to update team.' + e})
+        
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
+
+@csrf_exempt
+def newteam(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        
+        course_id = body.get('course_id')
+        leader_id = body.get('leader_id')
+        
+        try:
+            Team.objects.create(
+                course_id=course_id,
+                leader_id=leader_id,
+            )
+            return JsonResponse({'message': 'New team is successfully created'})
+        except Exception as e:
+            return JsonResponse({'message': 'Failed to create new team.' + e})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})

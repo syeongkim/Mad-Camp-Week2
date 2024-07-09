@@ -16,15 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from home.views import kakao_callback, upload_review, select_reviews
+from home.views import *
 # from home.views import register
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('oauth/callback', kakao_callback, name='kakao_callback'),
     path('reviews', upload_review, name='upload_review'),
     path('reviews/<int:reviewee_id>', select_reviews, name='select_reviews'),
+    path('alarm', save_alarm, name='save_alarm'),
+    path('alarm/<int:receiver_id>', select_alarm, name='select_alarm'),
+    # path('user/profile/<int:user_id>', user_profile, name='select_profile'),
     # path('user/register', register, name='register'),
     path('user/', include('user.urls')),
     path('teamposts/', include('teamposts.urls'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
