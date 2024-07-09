@@ -35,7 +35,7 @@ class UserProfiles(models.Model):
 class Users(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=20, default='unknown')
-    nickname = models.CharField(max_length=20, unique=True, default='unknown')
+    nickname = models.CharField(max_length=20, default='unknown')
     student_id = models.IntegerField(default=None, unique=True, null=True, blank=True)
     user_comment = models.TextField(null=True, blank=True, default="각오 한마디")
     user_capacity = models.TextField(null=True, blank=True, default="들은 과목과 기술 스택, 관심사를 적어주세요.")

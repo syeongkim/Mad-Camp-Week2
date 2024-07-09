@@ -27,6 +27,7 @@ class _LoginInfoState extends State<LoginInfo> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _userId = prefs.getInt('userId');
+      print('userId: $_userId');
 
       //회원가입 정보를 DB에 저장
       try {
