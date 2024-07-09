@@ -27,6 +27,7 @@ class MyUser(AbstractBaseUser):
     
 class Users(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     name = models.CharField(max_length=20, default='unknown')
     nickname = models.CharField(max_length=20, unique=True, default='unknown')
     student_id = models.IntegerField(default=None, unique=True)
