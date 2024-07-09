@@ -28,6 +28,7 @@ class TeamMembership(models.Model):
     team = models.ForeignKey(Team, on_delete=models.RESTRICT, related_name='memberships')
     member = models.ForeignKey(Users, on_delete=models.RESTRICT, related_name='team_memberships')
     joined_at = models.DateTimeField(auto_now_add=True)
+    is_finished = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('team', 'member')
