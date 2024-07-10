@@ -123,9 +123,30 @@ class AlarmDetailPage extends StatelessWidget {
     }
   }
 
+  Future<bool> _isTeamFull(int teamId) async {
+    final response = await http.post(
+      Uri.parse('http://$apiurl:8000/teamposts/team/count/$teamId'),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      return responseData['is_full'] == true;
+    } else {
+      print('Failed to check team status: ${response.statusCode}');
+      return false;
+    }
+  }
+
   Future<void> _handleAlarmAction(
-      String action, int receiver, int postId) async {
+      String action, int receiver, int postId, BuildContext context) async {
     if (action == 'accept') {
+      bool isFull = await _isTeamFull(postId);
+      if (isFull) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('팀의 인원이 이미 다 찼습니다.'),
+        ));
+        return;
+      }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
       var alarmData = {
@@ -145,6 +166,8 @@ class AlarmDetailPage extends StatelessWidget {
         );
 
         if (response.statusCode == 200) {
+          print('addtoteam 정상작동하나?');
+          await _addToTeam(postId, receiver);
           print('Alarm $action successfully');
         } else {
           print('Failed to $action alarm: ${response.statusCode}');
@@ -209,17 +232,19 @@ class AlarmDetailPage extends StatelessWidget {
                     await _handleAlarmAction(
                         'accept',
                         alarm['sender_id'],
-                        alarm[
-                            'post_id']); // TODO: 팀 멤버에 나 추가하고, 요청 보낸 사람에게 수락 알람 보내기
-                    await _addToTeam(alarm['post_id'], alarm['sender_id']);
+                        alarm['post_id'],
+                        context); // TODO: 팀 멤버에 나 추가하고, 요청 보낸 사람에게 수락 알람 보내기
                     Navigator.of(context).pop(); // 알람 목록으로 돌아가기
                   },
                   child: Text('수락'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await _handleAlarmAction('reject', alarm['sender_id'],
-                        alarm['post_id']); // TODO: 요청 보낸 사람에게 거절 알람 보내기
+                    await _handleAlarmAction(
+                        'reject',
+                        alarm['sender_id'],
+                        alarm['post_id'],
+                        context); // TODO: 요청 보낸 사람에게 거절 알람 보내기
                     Navigator.of(context).pop(); // 알람 목록으로 돌아가기
                   },
                   child: Text('거절'),
