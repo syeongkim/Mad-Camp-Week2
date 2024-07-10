@@ -145,6 +145,14 @@ def save_alarm(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=405)
 
+def read_alarm(request, alarm_id):
+    if request.method == 'PUT':
+        alarm = Alarms.objects.get(alarm_id=alarm_id)
+        alarm.read = True
+        alarm.save()
+        return JsonResponse({'message': 'alarm is successfully marked as read'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
 
 @csrf_exempt
 def select_alarm(request, receiver_id):

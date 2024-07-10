@@ -41,6 +41,26 @@ class _AlarmListState extends State<AlarmList> {
     }
   }
 
+  Future<void> readAlarm(int alarmId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://$apiurl:8000/alarm/$alarmId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'read': true}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Alarm read successfully');
+      } else {
+        print('Failed to read alarm: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error reading alarm: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +80,7 @@ class _AlarmListState extends State<AlarmList> {
               subtitle: Text(alarm['message'] ?? 'No Content'),
               isThreeLine: true,
               onTap: () {
+                readAlarm(alarm['alarm_id']); // 알람 읽음 처리
                 Navigator.push(
                   context,
                   MaterialPageRoute(

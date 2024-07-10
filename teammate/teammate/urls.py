@@ -11,6 +11,7 @@ urlpatterns = [
     path('reviews/<int:reviewee_id>', select_reviews, name='select_reviews'),
     path('alarm', save_alarm, name='save_alarm'),
     path('alarm/<int:receiver_id>', select_alarm, name='select_alarm'),
+    path('alarm/<int:alarm_id>', read_alarm, name='read_alarm'),
     path('user/', include('user.urls')),
     path('teamposts/', include('teamposts.urls'))
 ]
