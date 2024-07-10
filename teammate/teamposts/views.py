@@ -93,18 +93,20 @@ def teamposts_post(request, post_id):
     else:
         return JsonResponse({'message': 'Invalid request method'})
 
+@csrf_exempt
 def count_team_members(request, team_id):
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
-            teamdetail = TeamPost.objects.get(team_id=team_id)
+            teamdetail = TeamPost.objects.get(post_id=team_id)
             team = Team.objects.get(team_id=team_id)
             team_limit = teamdetail.member_limit
             team_members = TeamMembership.objects.filter(team_id=team_id).count()
-            if (team_limit == team_members):
+            if (team_limit <= team_members):
                 is_full = True
                 team.is_full = True
                 team.save()
-            return JsonResponse({'team_members': team_members, 'is_full': is_full})
+                return JsonResponse({'team_members': team_members, 'is_full': is_full})
+            return JsonResponse({'team_members': team_members, 'is_full': False})
         except Team.DoesNotExist:
             return JsonResponse({'message': 'No team found'})
     else:
