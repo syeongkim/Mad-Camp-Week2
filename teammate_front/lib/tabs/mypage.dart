@@ -60,8 +60,9 @@ class _MyPageState extends State<MyPage> {
         final Uri uri =
             Uri.parse('http://$apiurl:8000/reviews/$userId').replace();
         http.Response response = await http.get(uri);
+        final responseBody = json.decode(response.body);
         setState(() {
-          userReviews = json.decode(response.body) as List<Map<String, dynamic>>;
+          userReviews = List<Map<String, dynamic>>.from(responseBody);
         });
       }
     } catch (e) {
@@ -144,7 +145,8 @@ class _MyPageState extends State<MyPage> {
       itemCount: userReviews.length,
       itemBuilder: (context, index) {
         final review = userReviews[index];
-        final score = review['score'] != null ? review['score'].toDouble() : 0.0;
+        final score =
+            review['score'] != null ? review['score'].toDouble() : 0.0;
         return ListTile(
           title: RatingBarIndicator(
             rating: score,
