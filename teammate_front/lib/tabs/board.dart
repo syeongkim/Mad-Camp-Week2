@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'newpost.dart'; // newpost.dart 파일 가져오기
 import 'showpost.dart';
 import 'alarm.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class Board extends StatelessWidget {
   const Board({Key? key}) : super(key: key);
@@ -33,22 +34,9 @@ class SubjectList extends StatefulWidget {
 
 class SubjectListState extends State<SubjectList>
     with SingleTickerProviderStateMixin {
-  List<String> subjects = [
-    "Math 0",
-    "Science 0",
-    "History 0",
-    "Math 10",
-    "Science 10",
-    "History 10",
-    "Math 20",
-    "Science 20",
-    "History 20",
-  ]; // 예제 과목 목록
-
+  List<String> subjects = [];
   Map<String, List<String>> categorizedSubjects = {};
-
   List<Map<String, dynamic>> allPosts = [];
-
   String? selectedCategory;
   String? selectedSubject;
   late AnimationController _animationController;
@@ -58,15 +46,8 @@ class SubjectListState extends State<SubjectList>
   @override
   void initState() {
     super.initState();
+    loadSubjects();
     loadposts();
-    // 과목을 카테고리별로 분류
-    for (var subject in subjects) {
-      String category = subject.split(' ')[1];
-      if (!categorizedSubjects.containsKey(category)) {
-        categorizedSubjects[category] = [];
-      }
-      categorizedSubjects[category]!.add(subject);
-    }
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -75,11 +56,31 @@ class SubjectListState extends State<SubjectList>
       begin: Offset(2, 0),
       end: Offset(1, 0),
     ).animate(_animationController);
-
-    // 알림창을 닫힌 상태로 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _animationController.reverse();
     });
+  }
+
+  Future<void> loadSubjects() async {
+    final String response = await rootBundle.loadString('course_list.json');
+    final List<dynamic> data = await json.decode(response);
+    setState(() {
+      subjects = data
+          .map<String>(
+              (item) => "${item['course_code']} ${item['course_name']}")
+          .toList();
+      categorizeSubjects();
+    });
+  }
+
+  void categorizeSubjects() {
+    for (var subject in subjects) {
+      String category = subject.split(' ')[0].substring(2, 3) + "00";
+      if (!categorizedSubjects.containsKey(category)) {
+        categorizedSubjects[category] = [];
+      }
+      categorizedSubjects[category]!.add(subject);
+    }
   }
 
   Future<void> loadposts() async {
@@ -141,19 +142,19 @@ class SubjectListState extends State<SubjectList>
                     children: [
                       Expanded(
                         child: DropdownButton<String>(
-                          hint: Text("섹션 선택"),
+                          hint: Text("대분류 선택"),
                           value: selectedCategory,
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedCategory = newValue;
-                              selectedSubject = null; // 섹션이 변경되면 과목 선택 초기화
+                              selectedSubject = null;
                             });
                           },
                           items: categorizedSubjects.keys
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text("CS$value번대"),
                             );
                           }).toList(),
                         ),
@@ -187,7 +188,7 @@ class SubjectListState extends State<SubjectList>
                                 builder: (context) =>
                                     SubjectBoard(subject: selectedSubject!),
                               ),
-                            ).then((_) => loadposts()); // 돌아왔을 때 전체 기사 로드
+                            ).then((_) => loadposts());
                           },
                           child: Text('이동'),
                         ),
@@ -200,8 +201,7 @@ class SubjectListState extends State<SubjectList>
                     itemBuilder: (context, index) {
                       var post = allPosts[index];
                       return ListTile(
-                        title: Text(post['post_title'] ??
-                            'No Title'), // null인 경우 기본값 사용
+                        title: Text(post['post_title'] ?? 'No Title'),
                         subtitle: Text(
                             '${post['course_id'] ?? 'N/A'}    Capacity: ${post['member_limit'] ?? 'N/A'}    Due: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(post['due_date']))}'),
                         isThreeLine: true,
