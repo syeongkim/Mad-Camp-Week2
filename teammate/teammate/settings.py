@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     'home',
     'teamposts',
     'user',
+    'corsheaders',
 ]
+CORS_ORIGIN_ALLOW_ALL=True 
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'teammate.urls'
@@ -85,8 +90,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'teammate',
-        'USER' : 'root',
-        'PASSWORD' : '1234',
+        'USER' : 'admin',
+        'PASSWORD' : '12341234',
         'HOST' : 'localhost',
         'PORT' : '3306',
     }
