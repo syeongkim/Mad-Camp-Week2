@@ -101,11 +101,11 @@ class AlarmDetailPage extends StatelessWidget {
 
   AlarmDetailPage({required this.alarm});
 
-  Future<void> _addToTeam(int postId) async {
+  Future<void> _addToTeam(int postId, int senderId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('userId');
 
-    var teamData = {'team_id': postId, 'member_id': userId};
+    var teamData = {'team_id': postId, 'member_id': senderId};
     if (userId != null) {
       final response = await http.post(
         Uri.parse('http://$apiurl:8000/teamposts/team/register'),
@@ -211,7 +211,7 @@ class AlarmDetailPage extends StatelessWidget {
                         alarm['sender_id'],
                         alarm[
                             'post_id']); // TODO: 팀 멤버에 나 추가하고, 요청 보낸 사람에게 수락 알람 보내기
-                    await _addToTeam(alarm['post_id']);
+                    await _addToTeam(alarm['post_id'], alarm['sender_id']);
                     Navigator.of(context).pop(); // 알람 목록으로 돌아가기
                   },
                   child: Text('수락'),
