@@ -53,45 +53,45 @@ def teamposts_course(request, course_id):
         return JsonResponse({'message': 'Invalid request method'})
         
 
-# @csrf_exempt
-# def teamposts_post(request, post_id):
-#     if request.method == 'GET':
-#         try:
-#             post = TeamPost.objects.get(post_id=post_id)
-#             return JsonResponse(model_to_dict(post))
-#         except TeamPost.DoesNotExist:
-#             return JsonResponse({'message': 'No post found'}, state = 404)
+@csrf_exempt
+def teamposts_post(request, post_id):
+    if request.method == 'GET':
+        try:
+            post = TeamPost.objects.get(post_id=post_id)
+            return JsonResponse(model_to_dict(post))
+        except TeamPost.DoesNotExist:
+            return JsonResponse({'message': 'No post found'}, state = 404)
         
-#     elif request.method == 'PUT':
-#         body_unicode = request.body.decode('utf-8')
-#         body = json.loads(body_unicode)
+    elif request.method == 'PUT':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
         
-#         post_title = body.get('post_title')
-#         course_id = body.get('course_id')
-#         leader_id = body.get('leader_id')
-#         post_content = body.get('post_content')
-#         member_limit = body.get('member_limit')
-#         due_date = body.get('due_date')
+        post_title = body.get('post_title')
+        course_id = body.get('course_id')
+        leader_id = body.get('leader_id')
+        post_content = body.get('post_content')
+        member_limit = body.get('member_limit')
+        due_date = body.get('due_date')
         
-#         post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
+        post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
 
-#         if post_title is not None:
-#             post.post_title = post_title
-#         if course_id is not None:
-#             post.course_id = course_id
-#         if leader_id is not None:
-#             post.leader_id = leader_id
-#         if post_content is not None:
-#             post.post_content = post_content
-#         if member_limit is not None:
-#             post.member_limit = member_limit
-#         if due_date is not None:
-#             post.due_date = due_date
+        if post_title is not None:
+            post.post_title = post_title
+        if course_id is not None:
+            post.course_id = course_id
+        if leader_id is not None:
+            post.leader_id = leader_id
+        if post_content is not None:
+            post.post_content = post_content
+        if member_limit is not None:
+            post.member_limit = member_limit
+        if due_date is not None:
+            post.due_date = due_date
 
-#         post.save()
-#         return JsonResponse({'message': 'Post updated successfully'})
-#     else:
-#         return JsonResponse({'message': 'Invalid request method'})
+        post.save()
+        return JsonResponse({'message': 'Post updated successfully'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
 
 @csrf_exempt
 def count_team_members(request, team_id):
@@ -194,9 +194,10 @@ def myteample(request, user_id):
         teamdetails = []
         for team in teams:
             team_id = team['team_id']
-            teaminfo = Team.objects.get(team_id=team_id)
-            course_id = teaminfo.course_id
-            team_leader = teaminfo.leader_id
+            teaminfo = Team.objects.filter(team_id=team_id).values()
+            print(teaminfo[0])
+            course_id = teaminfo[0]['course_id']
+            team_leader = teaminfo[0]['leader_id']
             leader_info = Users.objects.get(user_id=team_leader)
             leader_name = leader_info.name
             
@@ -204,8 +205,8 @@ def myteample(request, user_id):
                 "team_id": team_id,
                 "course_id": course_id,
                 "leader_name": leader_name,
-                "is_full": teaminfo.is_full,
-                "is_finished": teaminfo.is_finished
+                "is_full": teaminfo[0]['is_full'],
+                "is_finished": teaminfo[0]['is_finished']
             })
             print(teamdetails)
 
@@ -263,8 +264,8 @@ def teamregister(request):
 @csrf_exempt
 def team(request, team_id):
     if request.method == 'GET':
-        team = Team.objects.filter(team_id=team_id).values()
-        return JsonResponse(list(team), safe=False)
+        team = Team.objects.get(team_id=team_id)
+        return JsonResponse(list(team))
     elif request.method == 'PUT':
         try:
         # 요청 본문에서 JSON 데이터를 읽고 파싱합니다.
@@ -289,8 +290,6 @@ def team(request, team_id):
         except Exception as e:
             # 다른 오류에 대한 오류 응답을 반환합니다.
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-        
-
 
 @csrf_exempt
 def newteam(request):
@@ -304,11 +303,12 @@ def newteam(request):
         
         try:
             Team.objects.create(
+                team_id=team_id,
                 course_id=course_id,
                 leader_id=leader_id,
             )
             return JsonResponse({'message': 'New team is successfully created'})
         except Exception as e:
-            return JsonResponse({'message': 'Failed to create new team.' + e})
+            return JsonResponse({'message': 'Failed to create new team.' + str(e)})
     else:
         return JsonResponse({'message': 'Invalid request method'})

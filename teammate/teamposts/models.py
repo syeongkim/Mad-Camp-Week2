@@ -15,7 +15,7 @@ class TeamPost(models.Model):
         return str(self.post_id)
 
 class Team(models.Model):
-    team_id = models.AutoField(primary_key=True)
+    team_id = models.BigIntegerField()
     course_id = models.CharField(max_length=10)
     leader_id = models.BigIntegerField()
     is_full = models.BooleanField(default=False)

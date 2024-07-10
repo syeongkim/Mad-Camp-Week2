@@ -57,7 +57,7 @@ class SubjectListState extends State<SubjectList> with SingleTickerProviderState
     // 과목을 카테고리별로 분류
     for (var subject in subjects) {
       // String category = subject.split(' ')[1];
-      String category = subject[2];
+      String category = subject[2]+"00";
       if (!categorizedSubjects.containsKey(category)) {
         categorizedSubjects[category] = [];
       }
@@ -85,19 +85,19 @@ class SubjectListState extends State<SubjectList> with SingleTickerProviderState
           .map<String>(
               (item) => "${item['course_code']} ${item['course_name']}")
           .toList();
-      categorizeSubjects();
+      //categorizeSubjects();
     });
   }
 
-  void categorizeSubjects() {
-    for (var subject in subjects) {
-      String category = subject.split(' ')[0].substring(2, 3) + "00";
-      if (!categorizedSubjects.containsKey(category)) {
-        categorizedSubjects[category] = [];
-      }
-      categorizedSubjects[category]!.add(subject);
-    }
-  }
+  // void categorizeSubjects() {
+  //   for (var subject in subjects) {
+  //     String category = subject.split(' ')[0].substring(2, 3) + "00";
+  //     if (!categorizedSubjects.containsKey(category)) {
+  //       categorizedSubjects[category] = [];
+  //     }
+  //     categorizedSubjects[category]!.add(subject);
+  //   }
+  // }
 
   Future<void> loadposts() async {
     try {
@@ -350,7 +350,7 @@ class _SubjectBoardState extends State<SubjectBoard> {
     var result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => NewPostPage(courseId: widget.subject), // 과목 ID 전달
+        builder: (context) => NewPostPage(courseId: widget.subject.split(' ')[0]), // 과목 ID 전달
       ),
     );
 
