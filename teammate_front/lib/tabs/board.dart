@@ -312,15 +312,16 @@ class _SubjectBoardState extends State<SubjectBoard> {
       ),
     );
 
-    if (result != null && result is Map<String, dynamic>) {
-      await savepost(
-        result['title'],
-        result['comment'],
-        result['capacity'],
-        result['dueDate'],
-      );
-      await loadSubjectDetails();
-    }
+    // if (result != null && result is Map<String, dynamic>) {
+    //   await savepost(
+    //     result['title'],
+    //     result['comment'],
+    //     result['capacity'],
+    //     result['dueDate'],
+    //   );
+    //   
+    // }
+    await loadSubjectDetails();
   }
 
   @override

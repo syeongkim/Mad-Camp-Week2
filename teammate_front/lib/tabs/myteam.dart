@@ -14,8 +14,8 @@ class _MyTeamPageState extends State<MyTeam> {
   List<Map<String, dynamic>> myTeample = [];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadUserIdAndFetchData();
   }
 
@@ -26,15 +26,20 @@ class _MyTeamPageState extends State<MyTeam> {
   }
 
   Future<void> _fetchTeamData(int userId) async {
-    final response = await http
-        .get(Uri.parse('http://$apiurl:8000/teamposts/myteample/$userId'));
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      setState(() {
-        myTeample = List<Map<String, dynamic>>.from(data);
-      });
-    } else {
-      throw Exception('Failed to load team data');
+    try {
+      final response = await http
+          .get(Uri.parse('http://$apiurl:8000/teamposts/myteample/$userId'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          myTeample = List<Map<String, dynamic>>.from(data);
+        });
+        print("teample set successfully : ${myTeample}");
+      } else {
+        print('Failed to load team data with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching team data: $e');
     }
   }
 
@@ -163,26 +168,29 @@ class _MyTeamPageState extends State<MyTeam> {
       appBar: AppBar(
         title: Text('My Teams'),
       ),
-      body: ListView(
-        children: [
-          SectionTitle(title: "팀플 진행중"),
-          TeamList(
-            teams: inProgressTeams,
-            showTeamMembersDialog: _showTeamMembersDialog,
-          ),
-          Divider(),
-          SectionTitle(title: "팀플 진행전"),
-          TeamList(
-            teams: notStartedTeams,
-            showTeamMembersDialog: _showTeamMembersDialog,
-          ),
-          Divider(),
-          SectionTitle(title: "팀플 완료"),
-          TeamList(
-            teams: finishedTeams,
-            showTeamMembersDialog: _showTeamMembersDialog,
-          ),
-        ],
+      body: RefreshIndicator(
+        onRefresh: _loadUserIdAndFetchData, // Pull to refresh
+        child: ListView(
+          children: [
+            SectionTitle(title: "팀플 진행중"),
+            TeamList(
+              teams: inProgressTeams,
+              showTeamMembersDialog: _showTeamMembersDialog,
+            ),
+            Divider(),
+            SectionTitle(title: "팀플 진행전"),
+            TeamList(
+              teams: notStartedTeams,
+              showTeamMembersDialog: _showTeamMembersDialog,
+            ),
+            Divider(),
+            SectionTitle(title: "팀플 완료"),
+            TeamList(
+              teams: finishedTeams,
+              showTeamMembersDialog: _showTeamMembersDialog,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -229,83 +237,3 @@ class TeamList extends StatelessWidget {
     );
   }
 }
-
-
-// class TeamList extends StatefulWidget {
-//   final List<Map<String, dynamic>> teams;
-//   final Function(int) showTeamMembersDialog;
-//   final Function onTeamFinished;
-
-//   TeamList({
-//     required this.teams,
-//     required this.showTeamMembersDialog,
-//     required this.onTeamFinished,
-//   });
-
-//   @override
-//   _TeamListState createState() => _TeamListState();
-// }
-
-// class _TeamListState extends State<TeamList> {
-//   Future<void> _finishTeam(int teamId) async {
-//     final response = await http.put(
-//       Uri.parse('http://$apiurl:8000/teamposts/team/$teamId'),
-//       headers: <String, String>{
-//         'Content-Type': 'application/json; charset=UTF-8',
-//       },
-//       body: jsonEncode(<String, dynamic>{
-//         'is_finished': true,
-//       }),
-//     );
-
-//     if (response.statusCode == 200) {
-//       print('Team finished successfully');
-//       widget.onTeamFinished();
-//     } else {
-//       throw Exception('Failed to finish team');
-//     }
-//   }
-
-//   Future<int?> _getCurrentUserId() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     return prefs.getInt('userId');
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: widget.teams.map((team) {
-//         return ListTile(
-//           title: Text(team['course_id']),
-//           subtitle: Text('팀장: ${team['leader_name']}'),
-//           onTap: () {
-//             widget.showTeamMembersDialog(team['team_id']);
-//           },
-//           trailing: FutureBuilder<int?>(
-//             future: _getCurrentUserId(),
-//             builder: (context, snapshot) {
-//               if (snapshot.connectionState == ConnectionState.waiting) {
-//                 return CircularProgressIndicator();
-//               } else if (snapshot.hasError) {
-//                 return Text('Error');
-//               } else if (snapshot.hasData) {
-//                 int? userId = snapshot.data;
-//                 if (userId == team['leader_id'] &&
-//                     team['is_full'] == true &&
-//                     team['is_finished'] == false) {
-//                   return TextButton(
-//                     onPressed: () async {
-//                       await _finishTeam(team['team_id']);
-//                     },
-//                     child: Text('팀플 끝내기'),
-//                   );
-//                 }
-//               }
-//               return Container(); // Default case to return an empty container if conditions are not met
-//             },
-//           ),
-//         );
-//       }).toList(),
-//     );
-//   }
-// }
