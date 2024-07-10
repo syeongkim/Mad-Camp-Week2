@@ -92,6 +92,7 @@ DATABASES = {
         'NAME': 'teammate',
         'USER' : 'admin',
         'PASSWORD' : '12341234',
+
         'HOST' : 'localhost',
         'PORT' : '3306',
     }
