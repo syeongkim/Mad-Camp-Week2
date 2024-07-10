@@ -46,6 +46,34 @@ class _NewPostPageState extends State<NewPostPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
 
+      //adding team
+      var teamData = {
+        'course_id': widget.courseId,
+        'leader_id': userId,
+      };
+
+      try {
+        final response = await http.post(
+          Uri.parse('http://$apiurl:8000/teamposts/team'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(teamData),
+        );
+        
+        if (response.statusCode == 200) {
+          print("team created successfully");
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to create team: ${response.statusCode}'),
+          ));
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error: $e'),
+          ));
+        }
+      
+
+      //adding post
       var postData = {
         'leader_id': userId,
         'course_id': widget.courseId, // 실제 course_id를 전달
@@ -63,16 +91,55 @@ class _NewPostPageState extends State<NewPostPage> {
         );
 
         if (response.statusCode == 200) {
-          Navigator.pop(context, {
-            'title': _title,
-            'comment': _comment,
-            'capacity': _capacity,
-            'dueDate': finalDateTime,
-          });
+          // Navigator.pop(context, {
+          //   'title': _title,
+          //   'comment': _comment,
+          //   'capacity': _capacity,
+          //   'dueDate': finalDateTime,
+          // });
           print("data saved successfully");
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Failed to save post: ${response.statusCode}'),
+          ));
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: $e'),
+        ));
+      }
+
+      //adding teamleader as teammember
+      final response =
+      await http.get(Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.courseId}'));
+      if (response.statusCode == 200) {
+        print('course info get success');
+      } else {
+        throw Exception('Failed to load team info');
+      }
+      List<Map<String, dynamic>> posts = [];
+      posts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      var post = posts[0];
+      int team_id = post['post_id'];
+
+      var memberData = {
+        'team_id': team_id,
+        'member_id': userId,
+      };
+
+      try {
+        final response = await http.post(
+          Uri.parse('http://$apiurl:8000/teamposts/team/register'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(memberData),
+        );
+
+        if (response.statusCode == 200) {
+          print("team member added successfully");
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to add team member: ${response.statusCode}'),
           ));
         }
       } catch (e) {
