@@ -60,7 +60,7 @@ def teamposts_post(request, post_id):
             post = TeamPost.objects.get(post_id=post_id)
             return JsonResponse(model_to_dict(post))
         except TeamPost.DoesNotExist:
-            return JsonResponse({'message': 'No post found'})
+            return JsonResponse({'message': 'No post found'}, state = 404)
         
     elif request.method == 'PUT':
         body_unicode = request.body.decode('utf-8')
@@ -262,7 +262,7 @@ def teamregister(request):
 def team(request, team_id):
     if request.method == 'GET':
         team = Team.objects.get(team_id=team_id)
-        return JsonResponse(model_to_dict(team))
+        return JsonResponse(list(team))
     elif request.method == 'PUT':
         try:
         # 요청 본문에서 JSON 데이터를 읽고 파싱합니다.
@@ -294,6 +294,7 @@ def newteam(request):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         
+        team_id = body.get('team_id')
         course_id = body.get('course_id')
         leader_id = body.get('leader_id')
         
