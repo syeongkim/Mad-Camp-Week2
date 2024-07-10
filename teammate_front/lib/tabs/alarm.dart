@@ -80,23 +80,86 @@ class AlarmDetailPage extends StatelessWidget {
 
   AlarmDetailPage({required this.alarm});
 
-  Future<void> _handleAlarmAction(String action) async {
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/alarm/${alarm['id']}/$action'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+  Future<void> _addToTeam(int postId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('userId');
 
-    if (response.statusCode == 200) {
-      print('Alarm $action successfully');
-    } else {
-      print('Failed to $action alarm: ${response.statusCode}');
+    var teamData = {'team_id': postId, 'member_id': userId};
+    if (userId != null) {
+      final response = await http.post(
+        Uri.parse('http://$apiurl:8000/teamposts/team/register'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(teamData),
+      );
+
+      if (response.statusCode == 200) {
+        print('Team successfully added');
+      } else {
+        print('Failed to add team: ${response.statusCode}');
+      }
+    }
+  }
+
+  Future<void> _handleAlarmAction(
+      String action, int receiver, int postId) async {
+    if (action == 'accept') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? userId = prefs.getInt('userId');
+      var alarmData = {
+        'receiver_id': receiver,
+        'sender_id': userId,
+        'post_id': postId,
+        'type': 'accept',
+        'message': 'nickname님이 함께하기 요청을 수락했습니다'
+      };
+      if (userId != null) {
+        final response = await http.post(
+          Uri.parse('http://$apiurl:8000/alarm'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(alarmData),
+        );
+
+        if (response.statusCode == 200) {
+          print('Alarm $action successfully');
+        } else {
+          print('Failed to $action alarm: ${response.statusCode}');
+        }
+      }
+    } else if (action == 'reject') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? userId = prefs.getInt('userId');
+      var alarmData = {
+        'receiver_id': receiver,
+        'sender_id': userId,
+        'post_id': postId,
+        'type': 'reject',
+        'message': 'nickname님이 함께하기 요청을 거절했습니다'
+      };
+      if (userId != null) {
+        final response = await http.post(
+          Uri.parse('http://$apiurl:8000/alarm'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(alarmData),
+        );
+
+        if (response.statusCode == 200) {
+          print('Alarm $action successfully');
+        } else {
+          print('Failed to $action alarm: ${response.statusCode}');
+        }
+      }
     }
   }
 
   @override
-  Widget build(BuildContext context) { // TODO: 일단 챗지피티가 짜준대로 만들었는데 창이 너무 커요.. dialog로 바꿔야할듯 
+  Widget build(BuildContext context) {
+    // TODO: 일단 챗지피티가 짜준대로 만들었는데 창이 너무 커요.. dialog로 바꿔야할듯
     return Scaffold(
       appBar: AppBar(
         title: Text('알람 상세 정보'),
@@ -122,14 +185,20 @@ class AlarmDetailPage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () async {
-                    await _handleAlarmAction('accept'); // TODO: 팀 멤버에 나 추가하고, 요청 보낸 사람에게 수락 알람 보내기
+                    await _handleAlarmAction(
+                        'accept',
+                        alarm['sender_id'],
+                        alarm[
+                            'post_id']); // TODO: 팀 멤버에 나 추가하고, 요청 보낸 사람에게 수락 알람 보내기
+                    await _addToTeam(alarm['post_id']);
                     Navigator.of(context).pop(); // 알람 목록으로 돌아가기
                   },
                   child: Text('수락'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await _handleAlarmAction('reject'); // TODO: 요청 보낸 사람에게 거절 알람 보내기
+                    await _handleAlarmAction('reject', alarm['sender_id'],
+                        alarm['post_id']); // TODO: 요청 보낸 사람에게 거절 알람 보내기
                     Navigator.of(context).pop(); // 알람 목록으로 돌아가기
                   },
                   child: Text('거절'),
