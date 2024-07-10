@@ -3,6 +3,7 @@ import 'package:teammate_front/config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:teammate_front/tabs/teamreview.dart';
 import 'profile.dart';
 
 class MyTeam extends StatefulWidget {
@@ -36,7 +37,8 @@ class _MyTeamPageState extends State<MyTeam> {
         });
         print("teample set successfully : ${myTeample}");
       } else {
-        print('Failed to load team data with status code: ${response.statusCode}');
+        print(
+            'Failed to load team data with status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching team data: $e');
@@ -67,6 +69,12 @@ class _MyTeamPageState extends State<MyTeam> {
     bool isLeader = currentUserId == teamInfo['leader_id'];
     bool isFull = teamInfo['is_full'];
     bool isFinished = teamInfo['is_finished'];
+
+    // 현재 사용자 ID와 다른 멤버들의 ID만 추출
+    List<int> memberIds = teamMembers
+        .where((member) => member['user_id'] != currentUserId)
+        .map<int>((member) => member['user_id'] as int)
+        .toList();
 
     showDialog(
       context: context,
@@ -100,9 +108,23 @@ class _MyTeamPageState extends State<MyTeam> {
                 onPressed: () async {
                   await _finishTeam(teamId);
                   Navigator.of(context).pop();
-                  _onTeamFinished();
+                  // _onTeamFinished(); 없어도 되는 줄 같은데 일단은 주석처리 해봄
                 },
                 child: Text('팀플 끝내기'),
+              )
+            else if (isFull && isFinished)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          TeamReviewPage(memberIds: memberIds),
+                    ),
+                  );
+                },
+                child: Text('팀원 리뷰하기'),
               ),
             TextButton(
               child: Text('Close'),
