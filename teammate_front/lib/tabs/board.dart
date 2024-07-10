@@ -288,8 +288,9 @@ class _SubjectBoardState extends State<SubjectBoard> {
 
   Future<void> loadSubjectDetails() async {
     try {
+      String course_code = widget.subject.split(' ')[0];
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/teamposts/courses/${widget.subject}'),
+        Uri.parse('http://10.0.2.2:8000/teamposts/courses/${course_code}'),
       );
 
       if (response.statusCode == 200) {

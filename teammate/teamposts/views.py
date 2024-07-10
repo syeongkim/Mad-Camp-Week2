@@ -263,8 +263,8 @@ def teamregister(request):
 @csrf_exempt
 def team(request, team_id):
     if request.method == 'GET':
-        team = Team.objects.get(team_id=team_id)
-        return JsonResponse(list(team))
+        team = Team.objects.filter(team_id=team_id).values()
+        return JsonResponse(list(team), safe=False)
     elif request.method == 'PUT':
         try:
         # 요청 본문에서 JSON 데이터를 읽고 파싱합니다.

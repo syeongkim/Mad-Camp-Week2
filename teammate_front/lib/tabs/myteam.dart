@@ -142,6 +142,7 @@ class _MyTeamPageState extends State<MyTeam> {
     final response =
         await http.get(Uri.parse('http://$apiurl:8000/teamposts/team/$teamId'));
     if (response.statusCode == 200) {
+      print(response.body);
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load team info');
