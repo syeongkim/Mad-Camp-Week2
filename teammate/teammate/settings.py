@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'teammate.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'teammate',
+        'NAME': 'testdb',
         'USER' : 'root',
         'PASSWORD' : '1234',
         'HOST' : 'localhost',

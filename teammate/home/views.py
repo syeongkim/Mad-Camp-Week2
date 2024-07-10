@@ -68,10 +68,9 @@ def select_reviews(request, reviewee_id):
             reviews = Reviews.objects.filter(reviewee_id=reviewee_id).values()
             return JsonResponse(list(reviews), safe=False)
         else:
-            return JsonResponse({'message': 'No review found'})
+            return JsonResponse({'message': 'No review found'}, status=404)
     else:
-        return JsonResponse({'message': 'Invalid request method'})
-
+        return JsonResponse({'message': 'Invalid request method'}, status=404)
 # @csrf_exempt
 # def save_alarm(request):
 #     if request.method == 'POST':
@@ -152,7 +151,7 @@ def read_alarm(request, alarm_id):
         alarm.save()
         return JsonResponse({'message': 'alarm is successfully marked as read'})
     else:
-        return JsonResponse({'message': 'Invalid request method'})
+        return JsonResponse({'message': 'Invalid request method'}, status = 404)
 
 @csrf_exempt
 def select_alarm(request, receiver_id):
@@ -162,6 +161,6 @@ def select_alarm(request, receiver_id):
             alarms = Alarms.objects.filter(receiver_id=receiver_id).order_by('-created_at').values()
             return JsonResponse(list(alarms), safe=False)
         else:
-            return JsonResponse({'message': 'No alarm found'})
+            return JsonResponse({'message': 'No alarm found'}, status = 404)
     else:
-        return JsonResponse({'message': 'Invalid request method'})
+        return JsonResponse({'message': 'Invalid request method'}, status = 404)

@@ -60,10 +60,11 @@ class _MyPageState extends State<MyPage> {
         final Uri uri =
             Uri.parse('http://$apiurl:8000/reviews/$userId').replace();
         http.Response response = await http.get(uri);
-        final responseBody = json.decode(response.body);
-        setState(() {
-          userReviews = List<Map<String, dynamic>>.from(responseBody);
+        if (response.statusCode == 200) {
+          setState(() {
+          userReviews = json.decode(response.body) as List<Map<String, dynamic>>;
         });
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
