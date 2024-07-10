@@ -45,11 +45,13 @@ class _NewPostPageState extends State<NewPostPage> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
+      String course_code = widget.courseId.split(' ')[0];
+      print(course_code);
 
        //adding post
       var postData = {
         'leader_id': userId,
-        'course_id': widget.courseId, // 실제 course_id를 전달
+        'course_id': course_code, // 실제 course_id를 전달
         'post_title': _title,
         'post_content': _comment,
         'member_limit': _capacity,
@@ -83,27 +85,43 @@ class _NewPostPageState extends State<NewPostPage> {
       }
 
       //adding team
-      int teamlength = 0;
       final response =
-      await http.get(Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.courseId}'));
+      await http.get(Uri.parse('http://$apiurl:8000/teamposts/teamposts'));
       if (response.statusCode == 200) {
-        print('course info get success');
+        print('all posts get success');
       } else {
-        throw Exception('Failed to load team info');
+        throw Exception('Failed to load all posts');
       }
-      final response2 = await http.get(Uri.parse('http://$apiurl:8000/teamposts/team'));
-      if (response2.statusCode == 200) {
-        List<Map<String, dynamic>> teams = [];
-        teams = List<Map<String, dynamic>>.from(jsonDecode(response2.body));
-        teamlength = teams.length;
-        print('all team get success');
-      } else {
-        throw Exception('Failed to load all team');
-      }
-      List<Map<String, dynamic>> posts = [];
-      posts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-      var post = posts[teamlength-1];
-      int team_id = post['post_id'];
+      var posts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      print(posts.length);
+      // var post = posts[posts.length-1];
+      int team_id = posts.length;
+      // int team_id = post['post_id'];
+      // print(team_id);
+
+
+      // int teamlength = 0;
+      // final response =
+      // await http.get(Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.courseId}'));
+      // if (response.statusCode == 200) {
+      //   print('course info get success');
+      // } else {
+      //   throw Exception('Failed to load team info');
+      // }
+      // final response2 = await http.get(Uri.parse('http://$apiurl:8000/teamposts/team'));
+      // if (response2.statusCode == 200) {
+      //   List<Map<String, dynamic>> teams = [];
+      //   teams = json.decode(response2.body) as List<Map<String, dynamic>>;
+      //   //teams = List<Map<String, dynamic>>.from(jsonDecode(response2.body));
+      //   teamlength = teams.length;
+      //   print('all team get success');
+      // } else {
+      //   throw Exception('Failed to load all team');
+      // }
+      // List<Map<String, dynamic>> posts = [];
+      // posts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      // var post = posts[teamlength-1];
+      // int team_id = post['post_id'];
       var teamData = {
         'team_id': team_id, 
         'course_id': widget.courseId,

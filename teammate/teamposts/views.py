@@ -194,9 +194,10 @@ def myteample(request, user_id):
         teamdetails = []
         for team in teams:
             team_id = team['team_id']
-            teaminfo = Team.objects.get(team_id=team_id)
-            course_id = teaminfo.course_id
-            team_leader = teaminfo.leader_id
+            teaminfo = Team.objects.filter(team_id=team_id).values()
+            print(teaminfo[0])
+            course_id = teaminfo[0]['course_id']
+            team_leader = teaminfo[0]['leader_id']
             leader_info = Users.objects.get(user_id=team_leader)
             leader_name = leader_info.name
             
@@ -204,8 +205,8 @@ def myteample(request, user_id):
                 "team_id": team_id,
                 "course_id": course_id,
                 "leader_name": leader_name,
-                "is_full": teaminfo.is_full,
-                "is_finished": teaminfo.is_finished
+                "is_full": teaminfo[0]['is_full'],
+                "is_finished": teaminfo[0]['is_finished']
             })
             print(teamdetails)
 
@@ -302,11 +303,12 @@ def newteam(request):
         
         try:
             Team.objects.create(
+                team_id=team_id,
                 course_id=course_id,
                 leader_id=leader_id,
             )
             return JsonResponse({'message': 'New team is successfully created'})
         except Exception as e:
-            return JsonResponse({'message': 'Failed to create new team.' + e})
+            return JsonResponse({'message': 'Failed to create new team.' + str(e)})
     else:
         return JsonResponse({'message': 'Invalid request method'})

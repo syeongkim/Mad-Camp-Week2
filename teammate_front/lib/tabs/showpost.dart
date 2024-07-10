@@ -8,8 +8,10 @@ import 'package:teammate_front/config.dart';
 class PostDetailsPage extends StatefulWidget {
   final Map<String, dynamic> post;
   final List<Map<String, dynamic>> allPosts;
+  final int userId;
+  final bool isMypost;
 
-  PostDetailsPage({required this.post, required this.allPosts});
+  PostDetailsPage({required this.post, required this.allPosts, required this.userId, required this.isMypost});
 
   @override
   _PostDetailsPageState createState() => _PostDetailsPageState();
@@ -25,10 +27,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     _fetchAndSetNickname();
   }
 
-  Future<void> _getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getInt('id');
-  }
+  // Future<int?> _getUserId() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   userId = prefs.getInt('userId');
+  //   print(widget.post['leader_id']);
+  //   print(userId);
+  //   return userId;
+  // }
 
   Future<void> _fetchAndSetNickname() async {
     final leaderId = widget.post['leader_id'];
@@ -275,7 +280,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        if (widget.post['leader_id'] == _getUserId())
+        if (widget.isMypost)
           ElevatedButton(
             child: Text('삭제'),
             onPressed: () => _showDeleteConfirmationDialog(
@@ -301,10 +306,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
 
 Future<bool> showPostDetailsDialog(BuildContext context,
     Map<String, dynamic> post, List<Map<String, dynamic>> allPosts) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int userId = prefs.getInt('userId')!;
+      bool isMypost = post['leader_id'] == userId;
   return await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
-          return PostDetailsPage(post: post, allPosts: allPosts);
+          return PostDetailsPage(post: post, allPosts: allPosts, userId: userId, isMypost: isMypost);
         },
       ) ??
       false;
