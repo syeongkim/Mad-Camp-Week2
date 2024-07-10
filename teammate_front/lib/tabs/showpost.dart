@@ -280,13 +280,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
             Navigator.of(context).pop();
           },
         ),
-        if (widget.isMypost)
-          ElevatedButton(
-            child: Text('삭제'),
-            onPressed: () => _showDeleteConfirmationDialog(
-                widget.post['post_id'], widget.post['leader_id']),
-          )
-        else
+        // if (widget.isMypost)
+        //   ElevatedButton(
+        //     child: Text('삭제'),
+        //     onPressed: () => _showDeleteConfirmationDialog(
+        //         widget.post['post_id'], widget.post['leader_id']),
+        //   )
+        // else
           ElevatedButton(
             child: Text('요청'),
             onPressed: () {
