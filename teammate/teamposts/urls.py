@@ -12,5 +12,6 @@ urlpatterns = [
     path('myteammember/<int:team_id>', myteammember, name='myteammember'),
     path('team/register', teamregister, name='teamregister'),
     path('team/<int:team_id>', team, name='team_detail'),
-    path('team', newteam, name='new_team'),
+    path('team/count/<int:team_id>', count_team_members, name='team_count'),
+    path('team', newteam, name='new_team'), 
 ]

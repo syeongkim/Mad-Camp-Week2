@@ -92,7 +92,18 @@ def teamposts_post(request, post_id):
         return JsonResponse({'message': 'Post updated successfully'})
     else:
         return JsonResponse({'message': 'Invalid request method'})
-    
+
+def count_team_members(request, team_id):
+    if request.method == 'GET':
+        try:
+            team = Team.objects.get(team_id=team_id)
+            team_members = TeamMembership.objects.filter(team_id=team_id).count()
+            return JsonResponse({'team_members': team_members})
+        except Team.DoesNotExist:
+            return JsonResponse({'message': 'No team found'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'})
+
 @csrf_exempt
 def teampostdelete(request, post_id, user_id):
     if request.method == 'DELETE':
