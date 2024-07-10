@@ -80,6 +80,7 @@ class _LoginInfoState extends State<LoginInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Enter Your Information'),
       ),

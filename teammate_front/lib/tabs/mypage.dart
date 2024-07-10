@@ -93,8 +93,9 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('My Page'),
+        title: Text('나의 프로필', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
@@ -111,7 +112,7 @@ class _MyPageState extends State<MyPage> {
           padding: const EdgeInsets.all(16.0),
           child: ListView(
             children: [
-              _buildInfo('Name', userInfo["name"]),
+              _buildInfo('이름', userInfo["name"]),
               _buildInfo('Nickname', userInfo['nickname']),
               _buildInfo('Comment', userInfo['user_comment']),
               _buildInfo('Student ID', userInfo['student_id'].toString()),
@@ -119,7 +120,7 @@ class _MyPageState extends State<MyPage> {
               _buildInfo('Created At', userInfo['created_at']),
               SizedBox(height: 16.0),
               Text('Reviews',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Choson')),
               _buildReviewsList(),
             ],
           ),

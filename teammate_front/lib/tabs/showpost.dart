@@ -115,7 +115,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('닫기'),
+              child: Text('닫기', style: TextStyle(color: Colors.black),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -223,6 +223,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Color.fromRGBO(249, 214, 219, 1),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,10 +235,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                       _showUserDetailsDialog(context, widget.post['leader_id']),
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(
-                        widget.post['profile_picture_url'] ??
-                            'https://via.placeholder.com/150'), // URL로 대체 가능
-                    backgroundColor: Colors.grey, // 이미지가 없는 경우 배경색 설정
+                    backgroundColor: Color.fromRGBO(236, 138, 177, 1),
                   ),
                 ),
                 SizedBox(width: 10),
@@ -275,20 +273,20 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('닫기'),
+          child: Text('닫기', style: TextStyle(color: Colors.black),),
           onPressed: () async {
             Navigator.of(context).pop();
           },
         ),
-        // if (widget.isMypost)
-        //   ElevatedButton(
-        //     child: Text('삭제'),
-        //     onPressed: () => _showDeleteConfirmationDialog(
-        //         widget.post['post_id'], widget.post['leader_id']),
-        //   )
-        // else
+        if (widget.isMypost)
           ElevatedButton(
-            child: Text('요청'),
+            child: Text('삭제', style: TextStyle(color: Colors.black),),
+            onPressed: () => _showDeleteConfirmationDialog(
+                widget.post['post_id'], widget.post['leader_id']),
+          )
+        else
+          ElevatedButton(
+            child: Text('요청', style: TextStyle(color: Colors.black),),
             onPressed: () {
               _saveRequest(
                   widget.post['post_id'], widget.post['leader_id'], '함께하기 요청');

@@ -87,8 +87,9 @@ class _MyEditPageState extends State<MyEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Edit My Info'),
+        title: Text('프로필 수정하기'),
         actions: [
           IconButton(
             icon: Icon(Icons.check),

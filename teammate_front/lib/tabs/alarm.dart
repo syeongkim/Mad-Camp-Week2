@@ -64,6 +64,7 @@ class _AlarmListState extends State<AlarmList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('알림 목록'),
         backgroundColor: Colors.white,
@@ -205,6 +206,7 @@ class AlarmDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: 일단 챗지피티가 짜준대로 만들었는데 창이 너무 커요.. dialog로 바꿔야할듯
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('알람 상세 정보'),
       ),

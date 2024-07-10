@@ -13,6 +13,7 @@ class TeamReviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Team Review'),
       ),
@@ -81,6 +82,7 @@ class _MemberReviewPageState extends State<MemberReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Review for Member ${widget.memberId}'),
       ),

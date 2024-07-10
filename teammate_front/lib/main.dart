@@ -18,9 +18,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Tab Navigation',
       theme: ThemeData(
+        fontFamily: 'Chosun',
         primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          color: Colors.white, // AppBar의 배경색
+          foregroundColor: Color.fromRGBO(121, 18, 25, 1), // AppBar의 텍스트 및 아이콘 색상
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.white, // BottomNavigationBar의 배경색
+          selectedItemColor: Color.fromRGBO(121, 18, 25, 1), // 선택된 아이템의 색상
+          unselectedItemColor: Color.fromRGBO(121, 18, 25, 0.3), // 선택되지 않은 아이템의 색상
+        ),
       ),
       home: SplashScreen(),
     );
@@ -51,6 +62,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // 로딩 중인 상태를 나타내는 로딩 인디케이터 표시
           return Scaffold(
+            backgroundColor: Colors.white,
             body: Center(
               child: CircularProgressIndicator(),
             ),
@@ -58,6 +70,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         } else if (snapshot.hasError) {
           // 오류 발생 시 오류 메시지 표시
           return Scaffold(
+            backgroundColor: Colors.white,
             body: Center(
               child: Text('오류 발생: ${snapshot.error}'),
             ),
@@ -100,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       // appBar: AppBar(
       //   title: Text('Tab Navigation Example'),
       // ),

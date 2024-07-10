@@ -6,12 +6,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teammate_front/tabs/teamreview.dart';
 import 'profile.dart';
 
-class MyTeam extends StatefulWidget {
+class MyTeam extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Colors.white, // AppBar의 배경색
+          foregroundColor: Color.fromRGBO(121, 18, 25, 1), // AppBar의 텍스트 및 아이콘 색상
+        ),
+        fontFamily: 'Chosun',
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false, // 디버그 배너 제거
+      home: MT(), // MyTeams 화면으로 설정
+    );
+  }
+}
+
+class MT extends StatefulWidget {
   @override
   _MyTeamPageState createState() => _MyTeamPageState();
 }
 
-class _MyTeamPageState extends State<MyTeam> {
+class _MyTeamPageState extends State<MT> {
   List<Map<String, dynamic>> myTeample = [];
 
   @override
@@ -80,7 +99,8 @@ class _MyTeamPageState extends State<MyTeam> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Team Members'),
+            backgroundColor: Color.fromRGBO(249, 214, 219, 1),
+            title: Text('팀원 목록'),
             content: SingleChildScrollView(
               child: ListBody(
                 children: teamMembers.map((member) {
@@ -110,7 +130,7 @@ class _MyTeamPageState extends State<MyTeam> {
                     Navigator.of(context).pop();
                     _onTeamFinished();
                   },
-                  child: Text('팀플 끝내기'),
+                  child: Text('팀플 끝내기', style: TextStyle(color: Colors.black),),
                 )
               else if (isFull && isFinished)
                 TextButton(
@@ -124,10 +144,10 @@ class _MyTeamPageState extends State<MyTeam> {
                       ),
                     );
                   },
-                  child: Text('팀원 리뷰하기'),
+                  child: Text('팀원 리뷰하기', style: TextStyle(color: Colors.black),),
                 ),
               TextButton(
-                child: Text('Close'),
+                child: Text('Close', style: TextStyle(color: Colors.black),),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -213,8 +233,9 @@ class _MyTeamPageState extends State<MyTeam> {
         .toList();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('My Teams'),
+        title: Text('나의 팀프로젝트', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: RefreshIndicator(
         onRefresh: _loadUserIdAndFetchData, // Pull to refresh
@@ -252,10 +273,10 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Text(
         title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
       ),
     );
   }

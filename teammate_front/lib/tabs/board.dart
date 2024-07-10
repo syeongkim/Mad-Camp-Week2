@@ -16,8 +16,12 @@ class Board extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Colors.white, // AppBar의 배경색
+          foregroundColor: Color.fromRGBO(121, 18, 25, 1), // AppBar의 텍스트 및 아이콘 색상
+        ),
         primaryColor: Colors.white,
-        fontFamily: 'Pretendard',
+        fontFamily: 'Chosun',
         primarySwatch: Colors.blue,
       ),
       home: const SubjectList(),
@@ -131,34 +135,38 @@ class SubjectListState extends State<SubjectList> with SingleTickerProviderState
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        await loadposts();
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('과목 게시판'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: _toggleAlarmPanel,
-            ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
+@override
+Widget build(BuildContext context) {
+  return WillPopScope(
+    onWillPop: () async {
+      await loadposts();
+      return true;
+    },
+    child: Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('팀프로젝트 게시판', style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: _toggleAlarmPanel,
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: IntrinsicWidth(
                         child: DropdownButton<String>(
-                          hint: Text("대분류 선택"),
+                          isExpanded: true,
+                          dropdownColor: Colors.white, // 드롭다운 메뉴 배경색
+                          hint: Text("코드 분류"),
                           value: selectedCategory,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -171,17 +179,21 @@ class SubjectListState extends State<SubjectList> with SingleTickerProviderState
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(
-                                "CS$value번대",
-                                style: TextStyle(fontSize: 16.0),
+                                "CS $value번대",
+                                style: TextStyle(fontSize: 12.0, color: Colors.black), // 텍스트 색상
                               ),
                             );
                           }).toList(),
                         ),
                       ),
-                      SizedBox(width: 10),
-                      if (selectedCategory != null)
-                        Expanded(
+                    ),
+                    SizedBox(width: 10),
+                    if (selectedCategory != null)
+                      Expanded(
+                        child: IntrinsicWidth(
                           child: DropdownButton<String>(
+                            isExpanded: true,
+                            dropdownColor: Colors.white, // 드롭다운 메뉴 배경색
                             hint: Text("과목 선택"),
                             value: selectedSubject,
                             onChanged: (String? newValue) {
@@ -195,65 +207,76 @@ class SubjectListState extends State<SubjectList> with SingleTickerProviderState
                                 value: value,
                                 child: Text(
                                   value,
-                                  style: TextStyle(fontSize: 12.0),
+                                  style: TextStyle(fontSize: 12.0, color: Colors.black), // 텍스트 색상
                                 ),
                               );
                             }).toList(),
                           ),
                         ),
-                      if (selectedSubject != null)
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    SubjectBoard(subject: selectedSubject!),
-                              ),
-                            ).then((_) => loadposts());
-                          },
-                          child: Text('이동'),
-                        ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: allPosts.length,
-                    itemBuilder: (context, index) {
-                      var post = allPosts[index];
-                      return ListTile(
-                        title: Text(post['post_title'] ?? 'No Title'),
-                        subtitle: Text(
-                            '${post['course_id'] ?? 'N/A'}    Capacity: ${post['member_limit'] ?? 'N/A'}    Due: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(post['due_date']))}'),
-                        isThreeLine: true,
-                        onTap: () async {
-                          bool isAvailable = await showPostDetailsDialog(
-                              context, post, allPosts);
-                          if (isAvailable) {
-                            await loadposts();
-                            post = allPosts[index];
-                          }
+                      ),
+                    if (selectedSubject != null)
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SubjectBoard(subject: selectedSubject!),
+                            ),
+                          ).then((_) => loadposts());
                         },
-                      );
-                    },
-                  ),
+                        style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(11), // 버튼의 크기를 조절합니다.
+                          backgroundColor: Color.fromRGBO(121, 18, 25, 1), // 버튼의 배경색
+                          foregroundColor: Colors.white, // 버튼 텍스트 색상
+                        ),
+                        child: Text(
+                          '드가자',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
-            SlideTransition(
-              position: _slideAnimation,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                color: Colors.grey[200],
-                child: isAlarmPanelOpen ? AlarmList() : Container(),
               ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: allPosts.length,
+                  itemBuilder: (context, index) {
+                    var post = allPosts[index];
+                    return ListTile(
+                      title: Text(post['post_title'] ?? 'No Title'),
+                      subtitle: Text(
+                          '${post['course_id'] ?? 'N/A'}    Capacity: ${post['member_limit'] ?? 'N/A'}    Due: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(post['due_date']))}'),
+                      isThreeLine: true,
+                      onTap: () async {
+                        bool isAvailable = await showPostDetailsDialog(
+                            context, post, allPosts);
+                        if (isAvailable) {
+                          await loadposts();
+                          post = allPosts[index];
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          SlideTransition(
+            position: _slideAnimation,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              color: Colors.grey[200],
+              child: isAlarmPanelOpen ? AlarmList() : Container(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 
   @override
   void dispose() {
@@ -374,6 +397,7 @@ class _SubjectBoardState extends State<SubjectBoard> {
         return true;
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(widget.subject),
         ),
