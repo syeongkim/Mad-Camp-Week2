@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'teammate',
         'USER' : 'admin',
         'PASSWORD' : '12341234',
-        'HOST' : '54.180.158.144',
+        'HOST' : 'database-2.c7sgu2c8sfbt.ap-northeast-2.rds.amazonaws.com',
         'PORT' : '3306',
     }
 }
