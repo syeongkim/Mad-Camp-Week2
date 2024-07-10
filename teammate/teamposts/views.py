@@ -289,6 +289,8 @@ def team(request, team_id):
         except Exception as e:
             # 다른 오류에 대한 오류 응답을 반환합니다.
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        
+
 
 @csrf_exempt
 def newteam(request):

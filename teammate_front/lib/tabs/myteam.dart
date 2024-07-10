@@ -61,89 +61,114 @@ class _MyTeamPageState extends State<MyTeam> {
   }
 
   void _showTeamMembersDialog(int teamId) async {
-    List<Map<String, dynamic>> teamMembers = await _fetchTeamMembers(teamId);
-    Map<String, dynamic> teamInfo = await _fetchTeamInfo(teamId);
+    try {
+      List<Map<String, dynamic>> teamMembers = await _fetchTeamMembers(teamId);
+      Map<String, dynamic> teamInfo = await _fetchTeamInfo(teamId);
+      int? currentUserId = await _getCurrentUserId();
 
-    int? currentUserId = await _getCurrentUserId();
+      bool isLeader = currentUserId == teamInfo['leader_id'];
+      bool isFull = teamInfo['is_full'];
+      bool isFinished = teamInfo['is_finished'];
 
-    bool isLeader = currentUserId == teamInfo['leader_id'];
-    bool isFull = teamInfo['is_full'];
-    bool isFinished = teamInfo['is_finished'];
+      // 현재 사용자 ID와 다른 멤버들의 ID만 추출
+      List<int> memberIds = teamMembers
+          .where((member) => member['user_id'] != currentUserId)
+          .map<int>((member) => member['user_id'] as int)
+          .toList();
 
-    // 현재 사용자 ID와 다른 멤버들의 ID만 추출
-    List<int> memberIds = teamMembers
-        .where((member) => member['user_id'] != currentUserId)
-        .map<int>((member) => member['user_id'] as int)
-        .toList();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Team Members'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: teamMembers.map((member) {
-                return ListTile(
-                  title: Text(member['name']),
-                  subtitle: Text(member['student_id'].toString()),
-                  onTap: () {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Team Members'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: teamMembers.map((member) {
+                  return ListTile(
+                    title: Text(member['name']),
+                    subtitle: Text(member['student_id'].toString()),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(
+                            user_id: member['user_id'],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: <Widget>[
+              if (isLeader && isFull && !isFinished)
+                TextButton(
+                  onPressed: () async {
+                    await _finishTeam(teamId);
+                    Navigator.of(context).pop();
+                    _onTeamFinished();
+                  },
+                  child: Text('팀플 끝내기'),
+                )
+              else if (isFull && isFinished)
+                TextButton(
+                  onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                          user_id: member['user_id'],
-                        ),
+                        builder: (context) =>
+                            TeamReviewPage(memberIds: memberIds),
                       ),
                     );
                   },
-                );
-              }).toList(),
-            ),
-          ),
-          actions: <Widget>[
-            if (isLeader && isFull && !isFinished)
+                  child: Text('팀원 리뷰하기'),
+                ),
               TextButton(
-                onPressed: () async {
-                  await _finishTeam(teamId);
-                  Navigator.of(context).pop();
-                  // _onTeamFinished(); 없어도 되는 줄 같은데 일단은 주석처리 해봄
-                },
-                child: Text('팀플 끝내기'),
-              )
-            else if (isFull && isFinished)
-              TextButton(
+                child: Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          TeamReviewPage(memberIds: memberIds),
-                    ),
-                  );
                 },
-                child: Text('팀원 리뷰하기'),
               ),
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error showing team members dialog: $e');
+    }
   }
 
+  // Future<Map<String, dynamic>> _fetchTeamInfo(int teamId) async {
+  //   final response =
+  //       await http.get(Uri.parse('http://$apiurl:8000/teamposts/team/$teamId'));
+  //   if (response.statusCode == 200) {
+  //     print(response.body);
+  //     return json.decode(response.body);
+  //   } else {
+  //     throw Exception('Failed to load team info');
+  //   }
+  // }
   Future<Map<String, dynamic>> _fetchTeamInfo(int teamId) async {
     final response =
         await http.get(Uri.parse('http://$apiurl:8000/teamposts/team/$teamId'));
     if (response.statusCode == 200) {
-      print(response.body);
-      return json.decode(response.body);
+      var data = json.decode(response.body);
+      if (data is List) {
+        // Find the team with the specified teamId
+        for (var team in data) {
+          if (team['team_id'] == teamId) {
+            return team as Map<String, dynamic>;
+          }
+        }
+        throw Exception('Team with specified ID not found');
+      } else if (data is Map<String, dynamic>) {
+        return data;
+      } else {
+        throw Exception('Unexpected data format');
+      }
     } else {
       throw Exception('Failed to load team info');
     }
