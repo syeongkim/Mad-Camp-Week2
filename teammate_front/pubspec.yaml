@@ -75,7 +75,6 @@ flutter:
   assets:
     - assets/logoS.png
     - assets/logoWhite.png
-    - assets/ChosunNm.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -88,10 +87,6 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Chosun
-      fonts:
-        - asset: asssets/ChosunNm.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
