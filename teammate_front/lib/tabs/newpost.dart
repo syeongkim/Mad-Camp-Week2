@@ -46,34 +46,7 @@ class _NewPostPageState extends State<NewPostPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int? userId = prefs.getInt('userId');
 
-      //adding team
-      var teamData = {
-        'course_id': widget.courseId,
-        'leader_id': userId,
-      };
-
-      try {
-        final response = await http.post(
-          Uri.parse('http://$apiurl:8000/teamposts/team'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(teamData),
-        );
-        
-        if (response.statusCode == 200) {
-          print("team created successfully");
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to create team: ${response.statusCode}'),
-          ));
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error: $e'),
-          ));
-        }
-      
-
-      //adding post
+       //adding post
       var postData = {
         'leader_id': userId,
         'course_id': widget.courseId, // 실제 course_id를 전달
@@ -109,7 +82,8 @@ class _NewPostPageState extends State<NewPostPage> {
         ));
       }
 
-      //adding teamleader as teammember
+      //adding team
+      int teamlength = 0;
       final response =
       await http.get(Uri.parse('http://$apiurl:8000/teamposts/courses/${widget.courseId}'));
       if (response.statusCode == 200) {
@@ -117,11 +91,47 @@ class _NewPostPageState extends State<NewPostPage> {
       } else {
         throw Exception('Failed to load team info');
       }
+      final response2 = await http.get(Uri.parse('http://$apiurl:8000/teamposts/team'));
+      if (response2.statusCode == 200) {
+        List<Map<String, dynamic>> teams = [];
+        teams = List<Map<String, dynamic>>.from(jsonDecode(response2.body));
+        teamlength = teams.length;
+        print('all team get success');
+      } else {
+        throw Exception('Failed to load all team');
+      }
       List<Map<String, dynamic>> posts = [];
       posts = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-      var post = posts[0];
+      var post = posts[teamlength-1];
       int team_id = post['post_id'];
+      var teamData = {
+        'team_id': team_id, 
+        'course_id': widget.courseId,
+        'leader_id': userId,
+      };
 
+      try {
+        final response = await http.post(
+          Uri.parse('http://$apiurl:8000/teamposts/team'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(teamData),
+        );
+        
+        if (response.statusCode == 200) {
+          print("team created successfully");
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to create team: ${response.statusCode}'),
+          ));
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error: $e'),
+          ));
+        }
+      
+
+      //adding teamleader as teammember
       var memberData = {
         'team_id': team_id,
         'member_id': userId,
