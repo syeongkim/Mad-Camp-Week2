@@ -53,45 +53,45 @@ def teamposts_course(request, course_id):
         return JsonResponse({'message': 'Invalid request method'})
         
 
-@csrf_exempt
-def teamposts_post(request, post_id):
-    if request.method == 'GET':
-        try:
-            post = TeamPost.objects.get(post_id=post_id)
-            return JsonResponse(model_to_dict(post))
-        except TeamPost.DoesNotExist:
-            return JsonResponse({'message': 'No post found'}, state = 404)
+# @csrf_exempt
+# def teamposts_post(request, post_id):
+#     if request.method == 'GET':
+#         try:
+#             post = TeamPost.objects.get(post_id=post_id)
+#             return JsonResponse(model_to_dict(post))
+#         except TeamPost.DoesNotExist:
+#             return JsonResponse({'message': 'No post found'}, state = 404)
         
-    elif request.method == 'PUT':
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
+#     elif request.method == 'PUT':
+#         body_unicode = request.body.decode('utf-8')
+#         body = json.loads(body_unicode)
         
-        post_title = body.get('post_title')
-        course_id = body.get('course_id')
-        leader_id = body.get('leader_id')
-        post_content = body.get('post_content')
-        member_limit = body.get('member_limit')
-        due_date = body.get('due_date')
+#         post_title = body.get('post_title')
+#         course_id = body.get('course_id')
+#         leader_id = body.get('leader_id')
+#         post_content = body.get('post_content')
+#         member_limit = body.get('member_limit')
+#         due_date = body.get('due_date')
         
-        post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
+#         post = get_object_or_404(TeamPost, post_id=post_id, leader_id=leader_id)
 
-        if post_title is not None:
-            post.post_title = post_title
-        if course_id is not None:
-            post.course_id = course_id
-        if leader_id is not None:
-            post.leader_id = leader_id
-        if post_content is not None:
-            post.post_content = post_content
-        if member_limit is not None:
-            post.member_limit = member_limit
-        if due_date is not None:
-            post.due_date = due_date
+#         if post_title is not None:
+#             post.post_title = post_title
+#         if course_id is not None:
+#             post.course_id = course_id
+#         if leader_id is not None:
+#             post.leader_id = leader_id
+#         if post_content is not None:
+#             post.post_content = post_content
+#         if member_limit is not None:
+#             post.member_limit = member_limit
+#         if due_date is not None:
+#             post.due_date = due_date
 
-        post.save()
-        return JsonResponse({'message': 'Post updated successfully'})
-    else:
-        return JsonResponse({'message': 'Invalid request method'})
+#         post.save()
+#         return JsonResponse({'message': 'Post updated successfully'})
+#     else:
+#         return JsonResponse({'message': 'Invalid request method'})
 
 @csrf_exempt
 def count_team_members(request, team_id):
