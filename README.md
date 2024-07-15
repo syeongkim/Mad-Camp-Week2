@@ -1,6 +1,7 @@
 ### Outline
 
 ---
+<img src="https://github.com/user-attachments/assets/33fc7d7e-8432-4461-8947-3e7a3cc10b39">
 ***‘플메가되..*** 🎀’는 팀플을 함께할 팀원을 구하고, 팀플을 진행하는 데에 있어 필요한 다양한 기능들을 제공해주는 앱입니다.
 
 **개발환경**
@@ -12,29 +13,24 @@
 
 ---
 
-[강지우](https://www.notion.so/a5baceb985844e619e8c56373b6120ab?pvs=21) 
+- 강지우
+- 김서영
+- 윤우성
 
-[ashley271 - Overview](https://github.com/ashley271)
-
-[김서영](https://www.notion.so/311946d346434147a28e847dd315b320?pvs=21) 
-
-[syeongkim - Overview](https://github.com/syeongkim)
-
-[윤우성](https://www.notion.so/de835d34bcea4575857161b4e44c363b?pvs=21) 
-
-[SPWooSeong - Overview](https://github.com/SPWooSeong)
 
 ### Databases
 
 ---
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/c8f8539c-0d96-444c-8cfe-5f9b48bd13f5/Untitled.png)
+<img src="https://github.com/user-attachments/assets/90a7fb54-eaa3-4d64-b2bd-edfab5b460bf">
 
-### APIs
+### Basic UI & Colors
 
 ---
 
-[APIs (2)](https://www.notion.so/5885a49388bc443f9e506ce3f7494b63?pvs=21)
+<img src="https://github.com/user-attachments/assets/98dada77-0f15-4fda-827d-061011e4046f">
+<img src="https://github.com/user-attachments/assets/b95cf03b-5884-4d74-91a6-5f271d81557f">
+<img src="https://github.com/user-attachments/assets/560e51a4-cf5f-4b13-bc5f-ee9805b32fce">
 
 ### Details
 
